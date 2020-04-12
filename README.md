@@ -51,8 +51,8 @@ Run tests
 pytest
 ```
 
-Run linter (flake8) and code formatter(Black).
+Run linter (flake8) and code formatter (Black).
 
 ```bash
-poetry run lint
+python scripts/linter.py
 ```
