@@ -1,17 +1,50 @@
-# api
-eODP API
+# eODP API
+
+Flask app fot the eODP API.
 
 ## Setup
 
 We are using Python 3.6.8 on the production server.
 
-For the dev environment, we are using pyenv to manage Python version (3.6.8), pip to install packages, and  pyenv-virtualenv for virtual environments.
+For the dev environment, we are using [pyenv](https://github.com/pyenv/pyenv) to run Python 3.6.8, and [Poetry](https://python-poetry.org) to manage packages and virtual environments.
 
-To setup you environment
+(1) Install pyenv and Poetry.
+
+(2) Start virtual environment
+```bash
+poetry shell
+```
+
+(3) Install packages.
 
 ```bash
-pip install -r requirements.txt
-pip freeze requirements.txt
+poetry install
+```
 
-pip install -r requirements.dev.txt
+(4) Config .env file
+
+Copy `.env-example` and rename it `.env`.
+
+Fill in the missing environmental variables.
+
+## Run App
+
+Start Flask app. The app is set to run in debug mode for development.
+
+```bash
+python eodp_api/app.py
+```
+
+## Testing
+
+Run tests
+
+```bash
+poetry run pytest
+```
+
+Run linter (flake8) and code formatter(Black).
+
+```bash
+poetry run lint
 ```
