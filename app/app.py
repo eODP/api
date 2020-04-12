@@ -4,11 +4,16 @@ from flask import Flask
 from flask_restful import Resource, Api
 from dotenv import load_dotenv
 
-app = Flask(__name__)
-load_dotenv(".env", verbose=True)
-app.config.from_object("config_base")
-app.config.from_envvar("APPLICATION_SETTINGS")
 
+load_dotenv(".env", verbose=True)
+
+if os.environ.get("ENV") == "Production":
+    config_str = "api.app.config.ProductionConfig"
+else:
+    config_str = "config.DevelopmentConfig"
+
+app = Flask(__name__)
+app.config.from_object(config_str)
 
 api = Api(app)
 
