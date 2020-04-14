@@ -137,5 +137,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# General
+.DS_Store
+
 # misc
 passenger.3000.*
