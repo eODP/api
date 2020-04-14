@@ -27,13 +27,13 @@ pyenv local 3.6.8
 create virtual environment
 
 ```bash
-pyenv virtualenv 3.6.8 eodp-api
+pyenv virtualenv 3.6.8 <venv-name>
 ```
 
-set this directory to use eodp-api virtual environment
+set this directory to use `<venv-name>` virtual environment
 
 ```bash
-pyenv local eodp-api
+pyenv local <venv-name>
 ```
 
 (4) Install packages.
