@@ -1,4 +1,5 @@
 from extension import db
+from models.pagination import paginate
 
 
 class ExpeditionModel(db.Model):
@@ -11,5 +12,5 @@ class ExpeditionModel(db.Model):
     workbook_tab_name = db.Column(db.String)
 
     @classmethod
-    def find_all(cls):
-        return cls.query.all()
+    def find_all(cls, page):
+        return paginate(cls.query.order_by("name"), page)
