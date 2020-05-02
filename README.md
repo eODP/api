@@ -56,6 +56,43 @@ pip install <package>
 pip freeze > requirements.txt
 ```
 
+(7) Database migrations
+
+We are using [flask-migrate](https://github.com/miguelgrinberg/Flask-Migrate) to handle SQLAchemy migrations.
+
+Make `flask` available to the command line.
+
+```bash
+export FLASK_APP=app/app.py
+```
+
+Migration commands.
+
+```bash
+# create migration
+flask db migrate -m 'name of migration'
+
+# run migration
+flask db upgrade
+```
+
+**NOTE:** Running flask from the command using Python 3.6 might result in an [ASCII encoding error with Click](https://click.palletsprojects.com/en/5.x/python3/#python-3-surrogate-handling).
+
+You can try:
+
+```bash
+# option 1
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+
+# option 2
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+# option 3
+unset LC_ALL
+```
+
 ## Run App
 
 Start Flask app. The app is set to run in debug mode for development.
