@@ -4,6 +4,7 @@ from flask import Flask
 from flask_restful import Api
 from dotenv import load_dotenv
 
+from extension import db, migrate, ma
 from resources.expedition import ExpeditionListResource
 from resources.home import HomeResource
 
@@ -19,9 +20,16 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config_str)
 
+    register_extensions(app)
     register_resources(app)
 
     return app
+
+
+def register_extensions(app):
+    db.init_app(app)
+    ma.init_app(app)
+    migrate.init_app(app, db)
 
 
 def register_resources(app):
