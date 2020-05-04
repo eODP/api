@@ -1,2 +1,2 @@
 def test_truthy():
-    assert True == True
+    assert 1 == 1
