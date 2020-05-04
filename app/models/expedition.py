@@ -1,5 +1,6 @@
 from extension import db
 from models.pagination import paginate
+from models.site import SiteModel
 
 
 class ExpeditionModel(db.Model):
@@ -10,6 +11,8 @@ class ExpeditionModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
     workbook_tab_name = db.Column(db.String)
+
+    sites = db.relationship("SiteModel", lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):

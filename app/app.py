@@ -7,6 +7,17 @@ from dotenv import load_dotenv
 from extension import db, migrate, ma
 from resources.expedition import ExpeditionListResource
 from resources.home import HomeResource
+from resources.site import SiteListResource
+
+# NOTE: temporarily import models in app.py so migrations will work
+from models.core import CoreModel
+from models.expedition import ExpeditionModel
+from models.hole import HoleModel
+from models.sample_taxon import SampleTaxonModel
+from models.sample import SampleModel
+from models.section import SectionModel
+from models.site import SiteModel
+from models.taxon import TaxonModel
 
 load_dotenv(".env", verbose=True)
 
@@ -35,6 +46,7 @@ def register_extensions(app):
 def register_resources(app):
     api = Api(app)
 
+    api.add_resource(SiteListResource, "/sites")
     api.add_resource(ExpeditionListResource, "/expeditions")
     api.add_resource(HomeResource, "/")
 
