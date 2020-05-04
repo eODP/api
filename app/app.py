@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from extension import db, migrate, ma
 from resources.expedition import ExpeditionListResource
 from resources.home import HomeResource
+from resources.site import SiteListResource
+
 
 load_dotenv(".env", verbose=True)
 
@@ -35,6 +37,7 @@ def register_extensions(app):
 def register_resources(app):
     api = Api(app)
 
+    api.add_resource(SiteListResource, "/sites")
     api.add_resource(ExpeditionListResource, "/expeditions")
     api.add_resource(HomeResource, "/")
 
