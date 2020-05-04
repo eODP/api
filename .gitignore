@@ -142,3 +142,4 @@ cython_debug/
 
 # misc
 passenger.3000.*
+.env-prod

@@ -76,6 +76,15 @@ flask db migrate -m 'name of migration'
 flask db upgrade
 ```
 
+If flask command is not available, try:
+
+```bash
+ python3 -m flask db migrate -m 'name of migration'
+
+python3 -m flask db upgrade
+
+```
+
 **NOTE:** Running flask from the command using Python 3.6 might result in an [ASCII encoding error with Click](https://click.palletsprojects.com/en/5.x/python3/#python-3-surrogate-handling).
 
 You can try:
