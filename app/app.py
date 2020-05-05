@@ -24,7 +24,7 @@ load_dotenv(".env", verbose=True)
 
 def create_app():
     if os.environ.get("ENV") == "Production":
-        config_str = "api.app.config.ProductionConfig"
+        config_str = "config.ProductionConfig"
     else:
         config_str = "config.DevelopmentConfig"
 
