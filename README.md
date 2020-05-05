@@ -56,7 +56,15 @@ pip install <package>
 pip freeze > requirements.txt
 ```
 
-(7) Database migrations
+## Run App
+
+Start Flask app. The app is set to run in debug mode for development.
+
+```bash
+python app/app.py
+```
+
+## Database migrations
 
 We are using [flask-migrate](https://github.com/miguelgrinberg/Flask-Migrate) to handle SQLAchemy migrations.
 
@@ -79,9 +87,9 @@ flask db upgrade
 If flask command is not available, try:
 
 ```bash
- python3 -m flask db migrate -m 'name of migration'
+python -m flask db migrate -m 'name of migration'
 
-python3 -m flask db upgrade
+python -m flask db upgrade
 
 ```
 
@@ -95,19 +103,15 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 
 # option 2
-export LC_ALL=C.UTF-8
-export LANG=C.UTF-8
-
-# option 3
 unset LC_ALL
 ```
 
-## Run App
+## Importing data
 
-Start Flask app. The app is set to run in debug mode for development.
+Scripts to import data are located in `app/scripts`. We are using [Fire](https://github.com/google/python-fire) to run the scripts.
 
-```bash
-python app/app.py
+```
+python app/scripts/<file>.py <method>
 ```
 
 ## Testing
