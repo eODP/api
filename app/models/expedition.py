@@ -1,6 +1,5 @@
 from extension import db
 from models.pagination import paginate
-from models.site import SiteModel
 
 
 class ExpeditionModel(db.Model):
