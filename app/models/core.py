@@ -7,7 +7,7 @@ class CoreModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     hole_id = db.Column(db.Integer, db.ForeignKey("holes.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
     type = db.Column(db.String)
     top_depth_drilled_dsf = db.Column(db.Float)
     bottom_depth_drilled_dsf = db.Column(db.Float)

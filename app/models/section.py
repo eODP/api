@@ -7,7 +7,7 @@ class SectionModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     core_id = db.Column(db.Integer, db.ForeignKey("cores.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
     recovered_length = db.Column(db.Float)
     curated_length = db.Column(db.Float)
     top_depth_csf_a = db.Column(db.Float)

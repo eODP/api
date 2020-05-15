@@ -8,7 +8,7 @@ class SampleModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     section_id = db.Column(db.Integer, db.ForeignKey("sections.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
     aw = db.Column(db.String)
     original_sample_id = db.Column(db.Integer)
     top = db.Column(db.Float)

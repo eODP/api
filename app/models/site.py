@@ -7,7 +7,7 @@ class SiteModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     expedition_id = db.Column(db.Integer, db.ForeignKey("expeditions.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
 
     expedition = db.relationship("ExpeditionModel")
 
