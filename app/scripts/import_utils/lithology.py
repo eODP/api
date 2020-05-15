@@ -16,6 +16,9 @@ from models.section import SectionModel
 from models.site import SiteModel
 from models.taxon import TaxonModel
 
+def trim(string):
+    return string.replace('\n', ' ').replace('  ', '')
+
 def find_expedition(exp_name):
     return ExpeditionModel.query.filter_by(name = exp_name).first()
 
@@ -28,24 +31,28 @@ def create_expedition(row):
     db.session.add(record)
 
 def find_site(exp_name, site_name):
-    sql = """
+    sql = trim("""
         SELECT sites.*
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
         WHERE expeditions.name = :exp_name
         AND sites.name = :site_name
-    """
+    """)
+
     return db.session.execute(
         sql,
         {'exp_name': exp_name, 'site_name': site_name}
     )
 
-def create_site(site_name, expedition_id):
-    record = SiteModel(name = site_name, expedition_id = expedition_id)
+def create_site(site_name, expedition_id, data_source_notes):
+    record = SiteModel(
+        name = site_name, expedition_id = expedition_id,
+        data_source_notes = data_source_notes
+    )
     db.session.add(record)
 
 def find_hole(exp_name, site_name, hole_name):
-    sql = """
+    sql = trim("""
         SELECT holes.*
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
@@ -53,18 +60,22 @@ def find_hole(exp_name, site_name, hole_name):
         WHERE expeditions.name = :exp_name
         AND sites.name = :site_name
         AND holes.name = :hole_name
-    """
+    """)
+
     return db.session.execute(
         sql,
         {'exp_name': exp_name, 'site_name': site_name, 'hole_name': hole_name}
     )
 
-def create_hole(hole_name, site_id):
-    record = HoleModel(name = hole_name, site_id = site_id)
+def create_hole(hole_name, site_id, data_source_notes):
+    record = HoleModel(
+        name = hole_name, site_id = site_id,
+        data_source_notes = data_source_notes
+    )
     db.session.add(record)
 
 def find_core(exp_name, site_name, hole_name, core_name, core_type):
-    sql = """
+    sql = trim("""
         SELECT cores.*
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
@@ -75,7 +86,8 @@ def find_core(exp_name, site_name, hole_name, core_name, core_type):
         AND holes.name = :hole_name
         AND cores.name = :core_name
         AND cores.type = :core_type
-    """
+    """)
+
     return db.session.execute(
         sql,
         {
@@ -85,13 +97,16 @@ def find_core(exp_name, site_name, hole_name, core_name, core_type):
         }
     )
 
-def create_core(core_name, core_type, hole_id):
-    record = CoreModel(name = core_name, type = core_type, hole_id = hole_id)
+def create_core(core_name, core_type, hole_id, data_source_notes):
+    record = CoreModel(
+        name = core_name, type = core_type, hole_id = hole_id,
+        data_source_notes = data_source_notes
+    )
     db.session.add(record)
 
 def find_section(exp_name, site_name, hole_name, core_name, core_type,
                  section_name):
-    sql = """
+    sql = trim("""
         SELECT sections.*
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
@@ -104,7 +119,8 @@ def find_section(exp_name, site_name, hole_name, core_name, core_type,
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
-    """
+    """)
+
     return db.session.execute(
         sql,
         {
@@ -114,13 +130,16 @@ def find_section(exp_name, site_name, hole_name, core_name, core_type,
         }
     )
 
-def create_section(section_name, core_id):
-    record = SectionModel(name = section_name, core_id = core_id)
+def create_section(section_name, core_id, data_source_notes):
+    record = SectionModel(
+        name = section_name, core_id = core_id,
+        data_source_notes = data_source_notes
+    )
     db.session.add(record)
 
 def find_sample(exp_name, site_name, hole_name, core_name, core_type,
                 section_name, aw, sample_name, top, bottom):
-    sql = """
+    sql = trim("""
         SELECT samples.*
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
@@ -138,7 +157,7 @@ def find_sample(exp_name, site_name, hole_name, core_name, core_type,
         AND samples.aw = :aw
         AND samples.top = :top
         AND samples.bottom = :bottom
-    """
+    """)
 
     top = None if top == '' else top
     bottom = None if bottom == '' else bottom
@@ -156,7 +175,7 @@ def find_sample(exp_name, site_name, hole_name, core_name, core_type,
 def create_sample(section_id, sample_name, aw, top, bottom, top_depth,
     bottom_depth, principal_lithology_prefix, principal_lithology_name,
     principal_lithology_suffix, minor_lithology_prefix,
-    minor_lithology_name, minor_lithology_suffix, raw_data):
+    minor_lithology_name, minor_lithology_suffix, raw_data, data_source_notes):
 
     top = None if top == '' else top
     bottom = None if bottom == '' else bottom
@@ -177,7 +196,8 @@ def create_sample(section_id, sample_name, aw, top, bottom, top_depth,
         minor_lithology_prefix = minor_lithology_prefix,
         minor_lithology_name = minor_lithology_name,
         minor_lithology_suffix = minor_lithology_suffix,
-        raw_data =  raw_data
+        raw_data =  raw_data,
+        data_source_notes = data_source_notes
     )
     db.session.add(record)
 
