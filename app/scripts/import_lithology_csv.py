@@ -56,6 +56,7 @@ class Import_Lithology_CSV(object):
     def import_sites(self):
         for path in LITHOLOGY_CSVS:
             with open(path, mode='r') as csv_file:
+                filename = path.split('/')[-1]
                 csv_reader = csv.DictReader(csv_file)
                 unique_values = set()
                 for row in csv_reader:
@@ -71,7 +72,7 @@ class Import_Lithology_CSV(object):
                     if not site.first():
                         expedition = find_expedition(exp_name)
                         if expedition:
-                            create_site(site_name, expedition.id)
+                            create_site(site_name, expedition.id, filename)
 
             db.session.commit()
 
@@ -79,6 +80,7 @@ class Import_Lithology_CSV(object):
     def import_holes(self):
         for path in LITHOLOGY_CSVS:
             with open(path, mode='r') as csv_file:
+                filename = path.split('/')[-1]
                 csv_reader = csv.DictReader(csv_file)
                 unique_values = set()
                 for row in csv_reader:
@@ -96,7 +98,7 @@ class Import_Lithology_CSV(object):
                     if not hole.first():
                         site = find_site(exp_name, site_name).first()
                         if site:
-                            create_hole(hole_name, site['id'])
+                            create_hole(hole_name, site['id'], filename)
 
             db.session.commit()
 
@@ -104,6 +106,7 @@ class Import_Lithology_CSV(object):
     def import_cores(self):
         for path in LITHOLOGY_CSVS:
             with open(path, mode='r') as csv_file:
+                filename = path.split('/')[-1]
                 csv_reader = csv.DictReader(csv_file)
                 unique_values = set()
                 for row in csv_reader:
@@ -123,7 +126,8 @@ class Import_Lithology_CSV(object):
                     if not core.first():
                         hole = find_hole(exp_name, site_name, hole_name).first()
                         if hole:
-                            create_core(core_name, core_type, hole['id'])
+                            create_core(core_name, core_type, hole['id'],
+                                        filename)
 
             db.session.commit()
 
@@ -131,6 +135,7 @@ class Import_Lithology_CSV(object):
     def import_sections(self):
         for path in LITHOLOGY_CSVS:
             with open(path, mode='r') as csv_file:
+                filename = path.split('/')[-1]
                 csv_reader = csv.DictReader(csv_file)
                 unique_values = set()
                 for row in csv_reader:
@@ -151,14 +156,15 @@ class Import_Lithology_CSV(object):
                         core = find_core(exp_name, site_name, hole_name,
                                          core_name, core_type).first()
                         if core:
-                            create_section(section_name, core['id'])
+                            create_section(section_name, core['id'], filename)
 
             db.session.commit()
 
 
     def import_samples(self):
-        for path in LITHOLOGY_CSVS[0:5]:
+        for path in LITHOLOGY_CSVS:
             with open(path, mode='r') as csv_file:
+                filename = path.split('/')[-1]
                 csv_reader = csv.DictReader(csv_file)
                 unique_values = set()
                 for row in csv_reader:
@@ -204,7 +210,8 @@ class Import_Lithology_CSV(object):
                                 minor_lithology_prefix,
                                 minor_lithology_name,
                                 minor_lithology_suffix,
-                                raw_data)
+                                raw_data,
+                                filename)
 
             db.session.commit()
 

@@ -22,6 +22,8 @@ class SectionModel(db.Model):
     catwalk_samples = db.Column(db.Integer)
     section_half_samples = db.Column(db.Integer)
     comments = db.Column(db.Text)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
     core = db.relationship("CoreModel")
 

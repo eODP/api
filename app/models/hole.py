@@ -30,6 +30,8 @@ class HoleModel(db.Model):
     seafloor_depth_drf = db.Column(db.Float)
     seafloor_depth_estimation_method = db.Column(db.String)
     rig_floor_to_sea_level = db.Column(db.Float)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
     expedition = db.relationship("SiteModel")
 

@@ -23,6 +23,8 @@ class SampleModel(db.Model):
     minor_lithology_suffix = db.Column(db.String)
     sampled_date = db.Column(db.DateTime)
     raw_data = db.Column(JSONB)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
     section = db.relationship("SectionModel")
 

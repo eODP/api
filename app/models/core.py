@@ -20,6 +20,8 @@ class CoreModel(db.Model):
     time_on_deck = db.Column(db.DateTime)
     sections = db.Column(db.Integer)
     label_id = db.Column(db.String)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
     hole = db.relationship("HoleModel")
 
