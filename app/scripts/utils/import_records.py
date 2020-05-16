@@ -16,7 +16,7 @@ from models.sample import Sample
 from models.section import Section
 from models.site import Site
 from models.taxon import Taxon
-from scripts.import_utils.db_utils import allowed_params, trim_doc_string
+from scripts.utils.db_utils import allowed_params, trim_doc_string
 
 
 def find_expedition(params):
@@ -28,8 +28,7 @@ def create_expedition(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Expedition(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()
 
 
 def find_site(params):
@@ -53,8 +52,7 @@ def create_site(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Site(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()
 
 
 def find_hole(params):
@@ -80,8 +78,7 @@ def create_hole(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Hole(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()
 
 
 def find_core(params):
@@ -116,8 +113,7 @@ def create_core(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Core(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()
 
 
 def find_section(params):
@@ -155,8 +151,7 @@ def create_section(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Section(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()
 
 
 def find_sample(params):
@@ -201,15 +196,13 @@ def find_sample(params):
     return db.session.execute(sql, attributes)
 
 
-# top_depth = None if attributes["top_depth"] == "" else attributes["top_depth"]
-# bottom_depth = (
-#     None if attributes["bottom_depth"] == "" else attributes["bottom_depth"]
-# )
-
-
 def create_sample(params):
-    params["top"] = None if params["top"] == "" else params["top"]
-    params["bottom"] = None if params["bottom"] == "" else params["bottom"]
+    # params["top"] = None if params["top"] == "" else params["top"]
+    # params["bottom"] = None if params["bottom"] == "" else params["bottom"]
+    # params["top_depth"] = None if params["top_depth"] == "" else params["top_depth"]
+    # params["bottom_depth"] = (
+    #     None if params["bottom_depth"] == "" else params["bottom_depth"]
+    # )
 
     allowed_attributes = [
         "section_id",
@@ -231,5 +224,4 @@ def create_sample(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Sample(**attributes)
-    db.session.add(record)
-    db.session.commit()
+    record.save()

@@ -38,3 +38,7 @@ class Hole(db.Model):
     @classmethod
     def find_all(cls, page):
         return paginate(cls.query.order_by("name"), page)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

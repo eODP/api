@@ -13,7 +13,7 @@ path = os.environ.get("PASSENGER_BASE_PATH")
 sys.path.append(path)
 
 from extension import db, ma
-from scripts.import_utils.lithology import (
+from scripts.utils.import_records import (
     find_expedition,
     create_expedition,
     find_site,
@@ -31,6 +31,10 @@ from scripts.import_utils.lithology import (
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
 LITHOLOGY_CSVS = glob.glob(f"{FILE_PATH}/Lithology_CSV/*.csv")
 
+# ======================
+# create app
+# ======================
+
 
 def create_app():
     config_str = "config.DevelopmentConfig"
@@ -47,6 +51,11 @@ app = create_app()
 app.app_context().push()
 
 
+# ======================
+# scripts
+# ======================
+
+
 class Import_Lithology_CSV(object):
     def clear_table(self, table):
         db.engine.execute(f"TRUNCATE {table} RESTART IDENTITY CASCADE;")
@@ -59,216 +68,234 @@ class Import_Lithology_CSV(object):
             for row in csv_reader:
                 create_expedition(row)
 
-        db.session.commit()
-
     def import_sites(self):
         for path in LITHOLOGY_CSVS:
+            filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
-                filename = path.split("/")[-1]
                 csv_reader = csv.DictReader(csv_file)
-                unique_values = set()
-                for row in csv_reader:
-                    if row["Exp"] == "" or row["Site"] == "":
-                        continue
+                self.import_sites_for_csv(csv_reader, filename)
 
-                    unique_values.add(f"{row['Exp']}|{row['Site']}")
+    def import_sites_for_csv(self, csv_reader, filename):
+        unique_values = set()
+        for row in csv_reader:
+            if row["Exp"] == "" or row["Site"] == "":
+                continue
 
-                for value in unique_values:
-                    exp_name, site_name = value.split("|")
+            unique_values.add(f"{row['Exp']}|{row['Site']}")
 
-                    site = find_site(exp_name, site_name)
-                    if not site.first():
-                        expedition = find_expedition(exp_name)
-                        if expedition:
-                            create_site(site_name, expedition.id, filename)
+        for value in unique_values:
+            exp_name, site_name = value.split("|")
 
-            db.session.commit()
+            site = find_site({"exp_name": exp_name, "site_name": site_name})
+            if not site.first():
+                expedition = find_expedition({"name": exp_name})
+
+                if expedition:
+                    create_site(
+                        {
+                            "name": site_name,
+                            "expedition_id": expedition.id,
+                            "data_source_notes": filename,
+                        }
+                    )
 
     def import_holes(self):
         for path in LITHOLOGY_CSVS:
+            filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
-                filename = path.split("/")[-1]
                 csv_reader = csv.DictReader(csv_file)
-                unique_values = set()
-                for row in csv_reader:
-                    if row["Exp"] == "" or row["Hole"] == "":
-                        continue
+                self.import_holes_for_csv(csv_reader, filename)
 
-                    unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
+    def import_holes_for_csv(self, csv_reader, filename):
+        unique_values = set()
+        for row in csv_reader:
+            if row["Exp"] == "" or row["Hole"] == "":
+                continue
 
-                return
-                for value in unique_values:
-                    exp_name, site_name, hole_name = value.split("|")
+            unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
 
-                    hole = find_hole(exp_name, site_name, hole_name)
-                    if not hole.first():
-                        site = find_site(exp_name, site_name).first()
-                        if site:
-                            create_hole(hole_name, site["id"], filename)
+        for value in unique_values:
+            exp_name, site_name, hole_name = value.split("|")
 
-            db.session.commit()
+            hole = find_hole(
+                {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name}
+            )
+            if not hole.first():
+                site = find_site({"exp_name": exp_name, "site_name": site_name}).first()
+
+                if site:
+                    create_hole(
+                        {
+                            "name": hole_name,
+                            "site_id": site["id"],
+                            "data_source_notes": filename,
+                        }
+                    )
 
     def import_cores(self):
         for path in LITHOLOGY_CSVS:
+            filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
-                filename = path.split("/")[-1]
                 csv_reader = csv.DictReader(csv_file)
-                unique_values = set()
-                for row in csv_reader:
-                    if row["Exp"] == "" or row["Core"] == "":
-                        continue
+                self.import_cores_for_csv(csv_reader, filename)
 
-                    unique_values.add(
-                        f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                        f"{row['Core']}|{row['Type']}"
+    def import_cores_for_csv(self, csv_reader, filename):
+        unique_values = set()
+        for row in csv_reader:
+            if row["Exp"] == "" or row["Core"] == "":
+                continue
+
+            unique_values.add(
+                f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
+                f"{row['Core']}|{row['Type']}"
+            )
+
+        for value in unique_values:
+            exp_name, site_name, hole_name, core_name, core_type = value.split("|")
+
+            core = find_core(
+                {
+                    "exp_name": exp_name,
+                    "site_name": site_name,
+                    "hole_name": hole_name,
+                    "core_name": core_name,
+                    "core_type": core_type,
+                }
+            )
+            if not core.first():
+                hole = find_hole(
+                    {
+                        "exp_name": exp_name,
+                        "site_name": site_name,
+                        "hole_name": hole_name,
+                    }
+                ).first()
+
+                if hole:
+                    create_core(
+                        {
+                            "name": core_name,
+                            "type": core_type,
+                            "hole_id": hole["id"],
+                            "data_source_notes": filename,
+                        }
                     )
-
-                for value in unique_values:
-                    exp_name, site_name, hole_name, core_name, core_type = value.split(
-                        "|"
-                    )
-
-                    core = find_core(
-                        exp_name, site_name, hole_name, core_name, core_type
-                    )
-                    if not core.first():
-                        hole = find_hole(exp_name, site_name, hole_name).first()
-                        if hole:
-                            create_core(core_name, core_type, hole["id"], filename)
-
-            db.session.commit()
 
     def import_sections(self):
         for path in LITHOLOGY_CSVS:
+            filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
-                filename = path.split("/")[-1]
                 csv_reader = csv.DictReader(csv_file)
-                unique_values = set()
-                for row in csv_reader:
-                    if row["Exp"] == "" or row["Section"] == "":
-                        continue
+                self.import_sections_for_csv(csv_reader, filename)
 
-                    unique_values.add(
-                        f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                        f"{row['Core']}|{row['Type']}|{row['Section']}"
+    def import_sections_for_csv(self, csv_reader, filename):
+        unique_values = set()
+        for row in csv_reader:
+            if row["Exp"] == "" or row["Section"] == "":
+                continue
+
+            unique_values.add(
+                f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
+                f"{row['Core']}|{row['Type']}|{row['Section']}"
+            )
+
+        for value in unique_values:
+            (
+                exp_name,
+                site_name,
+                hole_name,
+                core_name,
+                core_type,
+                section_name,
+            ) = value.split("|")
+
+            section = find_section(
+                {
+                    "exp_name": exp_name,
+                    "site_name": site_name,
+                    "hole_name": hole_name,
+                    "core_name": core_name,
+                    "core_type": core_type,
+                    "section_name": section_name,
+                }
+            )
+            if not section.first():
+                core = find_core(
+                    {
+                        "exp_name": exp_name,
+                        "site_name": site_name,
+                        "hole_name": hole_name,
+                        "core_name": core_name,
+                        "core_type": core_type,
+                    }
+                ).first()
+
+                if core:
+                    create_section(
+                        {
+                            "name": section_name,
+                            "core_id": core["id"],
+                            "data_source_notes": filename,
+                        }
                     )
-
-                for value in unique_values:
-                    (
-                        exp_name,
-                        site_name,
-                        hole_name,
-                        core_name,
-                        core_type,
-                        section_name,
-                    ) = value.split("|")
-
-                    section = find_section(
-                        exp_name,
-                        site_name,
-                        hole_name,
-                        core_name,
-                        core_type,
-                        section_name,
-                    )
-                    if not section.first():
-                        core = find_core(
-                            exp_name, site_name, hole_name, core_name, core_type
-                        ).first()
-                        if core:
-                            create_section(section_name, core["id"], filename)
-
-            db.session.commit()
 
     def import_samples(self):
         for path in LITHOLOGY_CSVS:
+            filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
-                filename = path.split("/")[-1]
                 csv_reader = csv.DictReader(csv_file)
-                unique_values = set()
-                for row in csv_reader:
-                    if row["Exp"] == "" or row["Sample"] == "":
-                        continue
+                self.import_samples_for_csv(csv_reader, filename)
 
-                    unique_values.add(
-                        f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                        f"{row['Core']}|"
-                        f"{row['Type']}|{row['Section']}|{row['A/W']}|"
-                        f"{row['Sample']}|{row['Top [cm]']}|"
-                        f"{row['Bottom [cm]']}|"
-                        f"{row['Top Depth [m]']}|{row['Bottom Depth [m]']}|"
-                        f"{row['Lithology Prefix']}|"
-                        f"{row['Lithology Principal Name']}|"
-                        f"{row['Lithology Suffix']}|"
-                        f"{row['Minor Lithology Prefix']}|"
-                        f"{row['Minor Lithology Name']}|"
-                        f"{row['Minor Lithology Suffix']}"
-                    )
+    def import_samples_for_csv(self, csv_reader, filename):
+        for row in csv_reader:
+            if row["Exp"] == "" or row["Sample"] == "":
+                continue
 
-                for value in unique_values:
-                    (
-                        exp_name,
-                        site_name,
-                        hole_name,
-                        core_name,
-                        core_type,
-                        section_name,
-                        aw,
-                        sample_name,
-                        top,
-                        bottom,
-                        top_depth,
-                        bottom_depth,
-                        principal_lithology_prefix,
-                        principal_lithology_name,
-                        principal_lithology_suffix,
-                        minor_lithology_prefix,
-                        minor_lithology_name,
-                        minor_lithology_suffix,
-                    ) = value.split("|")
-                    raw_data = row
+            sample = find_sample(
+                {
+                    "exp_name": row["Exp"],
+                    "site_name": row["Site"],
+                    "hole_name": row["Hole"],
+                    "core_name": row["Core"],
+                    "core_type": row["Type"],
+                    "section_name": row["Section"],
+                    "aw": row["A/W"],
+                    "sample_name": row["Sample"],
+                    "top": row["Top [cm]"],
+                    "bottom": row["Bottom [cm]"],
+                }
+            )
+            if not sample.first():
+                section = find_section(
+                    {
+                        "exp_name": row["Exp"],
+                        "site_name": row["Site"],
+                        "hole_name": row["Hole"],
+                        "core_name": row["Core"],
+                        "core_type": row["Type"],
+                        "section_name": row["Section"],
+                    }
+                ).first()
 
-                    sample = find_sample(
-                        exp_name,
-                        site_name,
-                        hole_name,
-                        core_name,
-                        core_type,
-                        section_name,
-                        aw,
-                        sample_name,
-                        top,
-                        bottom,
-                    )
-                    if not sample.first():
-                        section = find_section(
-                            exp_name,
-                            site_name,
-                            hole_name,
-                            core_name,
-                            core_type,
-                            section_name,
-                        ).first()
-                        if section:
-                            create_sample(
-                                section["id"],
-                                sample_name,
-                                aw,
-                                top,
-                                bottom,
-                                top_depth,
-                                bottom_depth,
-                                principal_lithology_prefix,
-                                principal_lithology_name,
-                                principal_lithology_suffix,
-                                minor_lithology_prefix,
-                                minor_lithology_name,
-                                minor_lithology_suffix,
-                                raw_data,
-                                filename,
-                            )
-
-            db.session.commit()
+                if section:
+                    attributes = {
+                        "section_id": section["id"],
+                        "name": row["Sample"],
+                        "aw": row["A/W"],
+                        "top": row["Top [cm]"],
+                        "bottom": row["Bottom [cm]"],
+                        "top_depth": row["Top Depth [m]"],
+                        "bottom_depth": row["Bottom Depth [m]"],
+                        "principal_lithology_prefix": row["Lithology Prefix"],
+                        "principal_lithology_name": row["Lithology Principal Name"],
+                        "principal_lithology_suffix": row["Lithology Suffix"],
+                        "minor_lithology_prefix": row["Minor Lithology Prefix"],
+                        "minor_lithology_name": row["Minor Lithology Name"],
+                        "minor_lithology_suffix": row["Minor Lithology Suffix"],
+                        "raw_data": row,
+                        "data_source_notes": filename,
+                    }
+                    create_sample(attributes)
 
 
 if __name__ == "__main__":
