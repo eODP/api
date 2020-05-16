@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class SiteModel(db.Model):
+class Site(db.Model):
     __tablename__ = "sites"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -11,7 +11,7 @@ class SiteModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
 
-    expedition = db.relationship("ExpeditionModel")
+    expedition = db.relationship("Expedition")
 
     @classmethod
     def find_all(cls, page):

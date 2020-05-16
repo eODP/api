@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class CoreModel(db.Model):
+class Core(db.Model):
     __tablename__ = "cores"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,7 +23,7 @@ class CoreModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
 
-    hole = db.relationship("HoleModel")
+    hole = db.relationship("Hole")
 
     @classmethod
     def find_all(cls, page):

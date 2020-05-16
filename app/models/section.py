@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class SectionModel(db.Model):
+class Section(db.Model):
     __tablename__ = "sections"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +25,7 @@ class SectionModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
 
-    core = db.relationship("CoreModel")
+    core = db.relationship("Core")
 
     @classmethod
     def find_all(cls, page):

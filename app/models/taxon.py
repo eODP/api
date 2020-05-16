@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class TaxonModel(db.Model):
+class Taxon(db.Model):
     __tablename__ = "taxa"
 
     id = db.Column(db.Integer, primary_key=True)

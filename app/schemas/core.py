@@ -1,7 +1,7 @@
 from extension import ma
-from models.core import CoreModel
+from models.core import Core
 
 
 class CoreSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = CoreModel
+        model = Core

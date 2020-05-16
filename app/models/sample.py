@@ -3,7 +3,7 @@ from models.pagination import paginate
 from sqlalchemy.dialects.postgresql.json import JSONB
 
 
-class SampleModel(db.Model):
+class Sample(db.Model):
     __tablename__ = "samples"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +26,7 @@ class SampleModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
 
-    section = db.relationship("SectionModel")
+    section = db.relationship("Section")
 
     @classmethod
     def find_all(cls, page):

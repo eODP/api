@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class HoleModel(db.Model):
+class Hole(db.Model):
     __tablename__ = "holes"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,7 +33,7 @@ class HoleModel(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
 
-    expedition = db.relationship("SiteModel")
+    expedition = db.relationship("Site")
 
     @classmethod
     def find_all(cls, page):
