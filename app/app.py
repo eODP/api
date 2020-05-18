@@ -10,14 +10,14 @@ from resources.home import HomeResource
 from resources.site import SiteListResource
 
 # NOTE: temporarily import models in app.py so migrations will work
-from models.core import CoreModel
-from models.expedition import ExpeditionModel
-from models.hole import HoleModel
-from models.sample_taxon import SampleTaxonModel
-from models.sample import SampleModel
-from models.section import SectionModel
-from models.site import SiteModel
-from models.taxon import TaxonModel
+from models.core import Core
+from models.expedition import Expedition
+from models.hole import Hole
+from models.sample_taxon import SampleTaxon
+from models.sample import Sample
+from models.section import Section
+from models.site import Site
+from models.taxon import Taxon
 
 load_dotenv(".env", verbose=True)
 

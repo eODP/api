@@ -2,7 +2,7 @@ from extension import db
 from models.pagination import paginate
 
 
-class SampleTaxonModel(db.Model):
+class SampleTaxon(db.Model):
     __tablename__ = "samples_taxa"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -10,9 +10,13 @@ class SampleTaxonModel(db.Model):
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
     code = db.Column(db.String)
 
-    sample = db.relationship("SampleModel")
-    taxon = db.relationship("TaxonModel")
+    sample = db.relationship("Sample")
+    taxon = db.relationship("Taxon")
 
     @classmethod
     def find_all(cls, page):
         return paginate(cls.query.order_by("name"), page)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

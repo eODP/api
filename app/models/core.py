@@ -2,12 +2,12 @@ from extension import db
 from models.pagination import paginate
 
 
-class CoreModel(db.Model):
+class Core(db.Model):
     __tablename__ = "cores"
 
     id = db.Column(db.Integer, primary_key=True)
     hole_id = db.Column(db.Integer, db.ForeignKey("holes.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
     type = db.Column(db.String)
     top_depth_drilled_dsf = db.Column(db.Float)
     bottom_depth_drilled_dsf = db.Column(db.Float)
@@ -20,9 +20,15 @@ class CoreModel(db.Model):
     time_on_deck = db.Column(db.DateTime)
     sections = db.Column(db.Integer)
     label_id = db.Column(db.String)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
-    hole = db.relationship("HoleModel")
+    hole = db.relationship("Hole")
 
     @classmethod
     def find_all(cls, page):
         return paginate(cls.query.order_by("name"), page)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

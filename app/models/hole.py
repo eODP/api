@@ -2,12 +2,12 @@ from extension import db
 from models.pagination import paginate
 
 
-class HoleModel(db.Model):
+class Hole(db.Model):
     __tablename__ = "holes"
 
     id = db.Column(db.Integer, primary_key=True)
     site_id = db.Column(db.Integer, db.ForeignKey("sites.id"))
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     water_depth = db
@@ -30,9 +30,15 @@ class HoleModel(db.Model):
     seafloor_depth_drf = db.Column(db.Float)
     seafloor_depth_estimation_method = db.Column(db.String)
     rig_floor_to_sea_level = db.Column(db.Float)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text)
 
-    expedition = db.relationship("SiteModel")
+    expedition = db.relationship("Site")
 
     @classmethod
     def find_all(cls, page):
         return paginate(cls.query.order_by("name"), page)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
