@@ -10,7 +10,7 @@ class Hole(db.Model):
     name = db.Column(db.String, nullable=False, index=True)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    water_depth = db
+    water_depth = db.Column(db.Float)
     penetration_dsf = db.Column(db.Float)
     cored_interval = db.Column(db.Float)
     recovered_length = db.Column(db.Float)
