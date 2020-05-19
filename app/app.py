@@ -13,10 +13,9 @@ from resources.section import SectionListResource, SectionResource
 from resources.sample import SampleListResource, SampleResource
 
 # NOTE: temporarily import models in app.py so migrations will work
-from models.sample_taxon import SampleTaxon
-from models.taxon import Taxon
-
 load_dotenv(".env", verbose=True)
+from models.sample_taxon import SampleTaxon  # noqa: F401
+from models.taxon import Taxon  # noqa: F401
 
 
 def create_app():

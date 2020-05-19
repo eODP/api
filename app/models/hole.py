@@ -1,5 +1,6 @@
 from extension import db
 from models.pagination import paginate
+
 from models.core import Core
 
 
@@ -35,7 +36,7 @@ class Hole(db.Model):
     data_source_notes = db.Column(db.Text)
 
     site = db.relationship("Site")
-    cores = db.relationship("Core", lazy="dynamic")
+    cores = db.relationship(Core, lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):

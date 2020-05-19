@@ -2,7 +2,6 @@ import os
 import sys
 import csv
 import glob
-import pdb
 
 from flask import Flask
 import fire

@@ -12,7 +12,7 @@ class Expedition(db.Model):
     data_source_notes = db.Column(db.Text)
     workbook_tab_name = db.Column(db.String)
 
-    sites = db.relationship("Site", lazy="dynamic")
+    sites = db.relationship(Site, lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):

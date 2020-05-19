@@ -27,7 +27,7 @@ class Section(db.Model):
     data_source_notes = db.Column(db.Text)
 
     core = db.relationship("Core")
-    samples = db.relationship("Sample", lazy="dynamic")
+    samples = db.relationship(Sample, lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):

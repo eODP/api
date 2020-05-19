@@ -11,11 +11,9 @@ from extension import db
 from models.core import Core
 from models.expedition import Expedition
 from models.hole import Hole
-from models.sample_taxon import SampleTaxon
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
-from models.taxon import Taxon
 from scripts.utils.db_utils import allowed_params, trim_doc_string
 
 
@@ -177,9 +175,6 @@ def find_sample(params):
     """
     )
 
-    params["top"] = None if params["top"] == "" else params["top"]
-    params["bottom"] = None if params["bottom"] == "" else params["bottom"]
-
     allowed_attributes = [
         "exp_name",
         "site_name",
@@ -197,13 +192,6 @@ def find_sample(params):
 
 
 def create_sample(params):
-    # params["top"] = None if params["top"] == "" else params["top"]
-    # params["bottom"] = None if params["bottom"] == "" else params["bottom"]
-    # params["top_depth"] = None if params["top_depth"] == "" else params["top_depth"]
-    # params["bottom_depth"] = (
-    #     None if params["bottom_depth"] == "" else params["bottom_depth"]
-    # )
-
     allowed_attributes = [
         "section_id",
         "name",

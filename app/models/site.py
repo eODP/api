@@ -13,7 +13,7 @@ class Site(db.Model):
     data_source_notes = db.Column(db.Text)
 
     expedition = db.relationship("Expedition")
-    holes = db.relationship("Hole", lazy="dynamic")
+    holes = db.relationship(Hole, lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):
