@@ -1,9 +1,7 @@
 import os
 
-import pdb
 import pytest
 
-from models.expedition import Expedition
 from extension import db
 from app import create_app
 
