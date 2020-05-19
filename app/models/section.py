@@ -1,5 +1,6 @@
 from extension import db
 from models.pagination import paginate
+from models.sample import Sample
 
 
 class Section(db.Model):
@@ -26,10 +27,15 @@ class Section(db.Model):
     data_source_notes = db.Column(db.Text)
 
     core = db.relationship("Core")
+    samples = db.relationship("Sample", lazy="dynamic")
 
     @classmethod
     def find_all(cls, page):
         return paginate(cls.query.order_by("name"), page)
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
 
     def save(self):
         db.session.add(self)

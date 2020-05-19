@@ -3,7 +3,8 @@ from models.sample import Sample
 
 
 class SampleSchema(ma.SQLAlchemyAutoSchema):
-    sites = ma.List(ma.Nested("SiteSchema", only=("name",)))
-
     class Meta:
         model = Sample
+
+    link = ma.Hyperlinks(ma.URLFor("sampleresource", id="<id>"))
+    section = ma.Nested("SectionSchema", only=("link", "name"))

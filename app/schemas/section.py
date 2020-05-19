@@ -3,7 +3,9 @@ from models.section import Section
 
 
 class SectionSchema(ma.SQLAlchemyAutoSchema):
-    sites = ma.List(ma.Nested("SiteSchema", only=("name",)))
-
     class Meta:
         model = Section
+
+    link = ma.Hyperlinks(ma.URLFor("sectionresource", id="<id>"))
+    core = ma.Nested("CoreSchema", only=("name", "link"))
+    samples = ma.List(ma.Nested("SampleSchema", only=("name", "link")))
