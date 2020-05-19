@@ -3,7 +3,8 @@ from models.expedition import Expedition
 
 
 class ExpeditionSchema(ma.SQLAlchemyAutoSchema):
-    sites = ma.List(ma.Nested("SiteSchema", only=("name",)))
-
     class Meta:
         model = Expedition
+
+    link = ma.Hyperlinks(ma.URLFor("expeditionresource", id="<id>"))
+    sites = ma.List(ma.Nested("SiteSchema", only=("link", "name")))
