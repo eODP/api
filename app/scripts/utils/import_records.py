@@ -1,12 +1,3 @@
-import os
-import sys
-
-from dotenv import load_dotenv
-
-load_dotenv(".env", verbose=True)
-path = os.environ.get("PASSENGER_BASE_PATH")
-sys.path.append(path)
-
 from extension import db
 from models.core import Core
 from models.expedition import Expedition

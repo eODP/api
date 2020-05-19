@@ -2,7 +2,6 @@ import os
 
 from flask import Flask, render_template
 from flask_restful import Api
-from dotenv import load_dotenv
 
 from extension import db, migrate, ma
 from resources.expedition import ExpeditionListResource, ExpeditionResource
@@ -13,7 +12,6 @@ from resources.section import SectionListResource, SectionResource
 from resources.sample import SampleListResource, SampleResource
 
 # NOTE: temporarily import models in app.py so migrations will work
-load_dotenv(".env", verbose=True)
 from models.sample_taxon import SampleTaxon  # noqa: F401
 from models.taxon import Taxon  # noqa: F401
 
