@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful import Api
 from dotenv import load_dotenv
 
@@ -57,6 +57,10 @@ def register_resources(app):
     api.add_resource(SectionResource, "/sections/<int:id>")
     api.add_resource(SampleListResource, "/samples")
     api.add_resource(SampleResource, "/samples/<int:id>")
+
+    @app.route("/")
+    def home():
+        return render_template("home.html")
 
 
 if __name__ == "__main__":
