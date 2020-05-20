@@ -1,4 +1,4 @@
-from scripts.utils.db_utils import allowed_params, trim_doc_string
+from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
 class TestAllowedAttribute:
@@ -47,3 +47,33 @@ class TestTrimDocString:
         expected = "ab cd ef gh ij"
 
         assert trim_doc_string(string) == expected
+
+
+class TestAddNullQueries:
+    def test_replaces_equality_check_with_IS_NULL_if_value_is_None(self):
+        attribute = {"bbb": None}
+        string = " table.b = :bbb"
+        expected = " table.b IS NULL"
+
+        assert add_null_queries(string, attribute) == expected
+
+    def test_handles_different_whitespaces(self):
+        attribute = {"bbb": None}
+        string = " table.b=   :bbb"
+        expected = " table.b IS NULL"
+
+        assert add_null_queries(string, attribute) == expected
+
+    def test_handles_multiple_attributes(self):
+        attribute = {"aaa": None, "bbb": "value", "ccc": None}
+        string = "AND table.z = :aaa AND table.y = :bbb AND table.x = :ccc"
+        expected = "AND table.z IS NULL AND table.y = :bbb AND table.x IS NULL"
+
+        assert add_null_queries(string, attribute) == expected
+
+    def test_handles_underscores(self):
+        attribute = {"aa_bb": None}
+        string = " table.z_y = :aa_bb"
+        expected = " table.z_y IS NULL"
+
+        assert add_null_queries(string, attribute) == expected

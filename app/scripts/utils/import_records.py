@@ -5,7 +5,7 @@ from models.hole import Hole
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
-from scripts.utils.db_utils import allowed_params, trim_doc_string
+from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
 def find_expedition(params):
@@ -33,6 +33,7 @@ def find_site(params):
 
     allowed_attributes = ["exp_name", "site_name"]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -59,6 +60,7 @@ def find_hole(params):
 
     allowed_attributes = ["exp_name", "site_name", "hole_name"]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -94,6 +96,7 @@ def find_core(params):
         "core_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -132,6 +135,7 @@ def find_section(params):
         "section_name",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -179,6 +183,7 @@ def find_sample(params):
         "bottom",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
