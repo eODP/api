@@ -1,12 +1,19 @@
 import os
 import csv
 import glob
+import sys
 
 from flask import Flask
 import fire
+from dotenv import load_dotenv
 
-from extension import db, ma
-from scripts.utils.import_records import (
+load_dotenv(".env", verbose=True)
+if os.environ.get("ENV") == "Production":
+    path = os.environ.get("PASSENGER_BASE_PATH")
+    sys.path.append(path)
+
+from extension import db, ma  # noqa: F402
+from scripts.utils.import_records import (  # noqa: F402
     find_expedition,
     create_expedition,
     find_site,
