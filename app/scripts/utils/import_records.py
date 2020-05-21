@@ -5,7 +5,7 @@ from models.hole import Hole
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
-from scripts.utils.db_utils import allowed_params, trim_doc_string
+from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
 def find_expedition(params):
@@ -27,12 +27,13 @@ def find_site(params):
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
         WHERE expeditions.name = :exp_name
-        AND sites.name = :site_name
+        AND sites.name = :site_name;
     """
     )
 
     allowed_attributes = ["exp_name", "site_name"]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -53,12 +54,13 @@ def find_hole(params):
         JOIN holes on holes.site_id = sites.id
         WHERE expeditions.name = :exp_name
         AND sites.name = :site_name
-        AND holes.name = :hole_name
+        AND holes.name = :hole_name;
     """
     )
 
     allowed_attributes = ["exp_name", "site_name", "hole_name"]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -82,7 +84,7 @@ def find_core(params):
         AND sites.name = :site_name
         AND holes.name = :hole_name
         AND cores.name = :core_name
-        AND cores.type = :core_type
+        AND cores.type = :core_type;
     """
     )
 
@@ -94,6 +96,7 @@ def find_core(params):
         "core_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -120,6 +123,7 @@ def find_section(params):
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
+        AND sections.aw = :section_aw;
     """
     )
 
@@ -130,13 +134,15 @@ def find_section(params):
         "core_name",
         "core_type",
         "section_name",
+        "section_aw",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
 def create_section(params):
-    allowed_attributes = ["name", "core_id", "data_source_notes"]
+    allowed_attributes = ["name", "core_id", "aw", "data_source_notes"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Section(**attributes)
@@ -159,10 +165,19 @@ def find_sample(params):
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
+        AND sections.aw = :section_aw
         AND samples.name = :sample_name
-        AND samples.aw = :aw
         AND samples.top = :top
         AND samples.bottom = :bottom
+        AND samples.top_depth = :top_depth
+        AND samples.bottom_depth = :bottom_depth
+        AND samples.principal_lithology_prefix = :principal_lithology_prefix
+        AND samples.principal_lithology_name = :principal_lithology_name
+        AND samples.principal_lithology_suffix = :principal_lithology_suffix
+        AND samples.minor_lithology_prefix = :minor_lithology_prefix
+        AND samples.minor_lithology_name = :minor_lithology_name
+        AND samples.minor_lithology_suffix = :minor_lithology_suffix
+        AND samples.data_source_notes = :data_source_notes;
     """
     )
 
@@ -173,12 +188,22 @@ def find_sample(params):
         "core_name",
         "core_type",
         "section_name",
-        "aw",
+        "section_aw",
         "sample_name",
         "top",
         "bottom",
+        "top_depth",
+        "bottom_depth",
+        "principal_lithology_prefix",
+        "principal_lithology_name",
+        "principal_lithology_suffix",
+        "minor_lithology_prefix",
+        "minor_lithology_name",
+        "minor_lithology_suffix",
+        "data_source_notes",
     ]
     attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
     return db.session.execute(sql, attributes)
 
 
@@ -186,7 +211,6 @@ def create_sample(params):
     allowed_attributes = [
         "section_id",
         "name",
-        "aw",
         "top",
         "bottom",
         "top_depth",

@@ -1,12 +1,19 @@
 import os
 import csv
 import glob
+import sys
 
 from flask import Flask
 import fire
+from dotenv import load_dotenv
 
-from extension import db, ma
-from scripts.utils.import_records import (
+load_dotenv(".env", verbose=True)
+if os.environ.get("ENV") == "Production":
+    path = os.environ.get("PASSENGER_BASE_PATH")
+    sys.path.append(path)
+
+from extension import db, ma  # noqa: F402
+from scripts.utils.import_records import (  # noqa: F402
     find_expedition,
     create_expedition,
     find_site,
@@ -71,7 +78,7 @@ class Import_Lithology_CSV(object):
     def import_sites_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Site"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(f"{row['Exp']}|{row['Site']}")
@@ -102,7 +109,7 @@ class Import_Lithology_CSV(object):
     def import_holes_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Hole"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
@@ -135,7 +142,7 @@ class Import_Lithology_CSV(object):
     def import_cores_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Core"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(
@@ -184,12 +191,12 @@ class Import_Lithology_CSV(object):
     def import_sections_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Section"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(
                 f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                f"{row['Core']}|{row['Type']}|{row['Section']}"
+                f"{row['Core']}|{row['Type']}|{row['Section']}|{row['A/W']}"
             )
 
         for value in unique_values:
@@ -200,6 +207,7 @@ class Import_Lithology_CSV(object):
                 core_name,
                 core_type,
                 section_name,
+                aw,
             ) = value.split("|")
 
             section = find_section(
@@ -210,6 +218,7 @@ class Import_Lithology_CSV(object):
                     "core_name": core_name,
                     "core_type": core_type,
                     "section_name": section_name,
+                    "section_aw": aw,
                 }
             )
             if not section.first():
@@ -228,6 +237,7 @@ class Import_Lithology_CSV(object):
                         {
                             "name": section_name,
                             "core_id": core["id"],
+                            "aw": aw,
                             "data_source_notes": filename,
                         }
                     )
@@ -241,7 +251,7 @@ class Import_Lithology_CSV(object):
 
     def import_samples_for_csv(self, csv_reader, filename):
         for row in csv_reader:
-            if row["Exp"] == "" or row["Sample"] == "":
+            if row["Exp"] == "":
                 continue
 
             sample = find_sample(
@@ -252,10 +262,19 @@ class Import_Lithology_CSV(object):
                     "core_name": row["Core"],
                     "core_type": row["Type"],
                     "section_name": row["Section"],
-                    "aw": row["A/W"],
+                    "section_aw": row["A/W"],
                     "sample_name": row["Sample"],
                     "top": row["Top [cm]"],
                     "bottom": row["Bottom [cm]"],
+                    "top_depth": row["Top Depth [m]"],
+                    "bottom_depth": row["Bottom Depth [m]"],
+                    "principal_lithology_prefix": row["Lithology Prefix"],
+                    "principal_lithology_name": row["Lithology Principal Name"],
+                    "principal_lithology_suffix": row["Lithology Suffix"],
+                    "minor_lithology_prefix": row["Minor Lithology Prefix"],
+                    "minor_lithology_name": row["Minor Lithology Name"],
+                    "minor_lithology_suffix": row["Minor Lithology Suffix"],
+                    "data_source_notes": filename,
                 }
             )
             if not sample.first():
@@ -267,6 +286,7 @@ class Import_Lithology_CSV(object):
                         "core_name": row["Core"],
                         "core_type": row["Type"],
                         "section_name": row["Section"],
+                        "section_aw": row["A/W"],
                     }
                 ).first()
 
@@ -274,7 +294,6 @@ class Import_Lithology_CSV(object):
                     attributes = {
                         "section_id": section["id"],
                         "name": row["Sample"],
-                        "aw": row["A/W"],
                         "top": row["Top [cm]"],
                         "bottom": row["Bottom [cm]"],
                         "top_depth": row["Top Depth [m]"],
