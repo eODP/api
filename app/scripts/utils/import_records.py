@@ -123,6 +123,7 @@ def find_section(params):
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
+        AND sections.aw = :section_aw
     """
     )
 
@@ -133,6 +134,7 @@ def find_section(params):
         "core_name",
         "core_type",
         "section_name",
+        "section_aw",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
@@ -140,7 +142,7 @@ def find_section(params):
 
 
 def create_section(params):
-    allowed_attributes = ["name", "core_id", "data_source_notes"]
+    allowed_attributes = ["name", "core_id", "aw", "data_source_notes"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Section(**attributes)
@@ -163,10 +165,11 @@ def find_sample(params):
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
+        AND sections.aw = :section_aw
         AND samples.name = :sample_name
-        AND samples.aw = :aw
         AND samples.top = :top
         AND samples.bottom = :bottom
+        AND samples.principal_lithology_name = :principal_lithology_name
     """
     )
 
@@ -177,10 +180,11 @@ def find_sample(params):
         "core_name",
         "core_type",
         "section_name",
-        "aw",
+        "section_aw",
         "sample_name",
         "top",
         "bottom",
+        "principal_lithology_name",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
@@ -191,7 +195,6 @@ def create_sample(params):
     allowed_attributes = [
         "section_id",
         "name",
-        "aw",
         "top",
         "bottom",
         "top_depth",

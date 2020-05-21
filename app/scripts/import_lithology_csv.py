@@ -196,7 +196,7 @@ class Import_Lithology_CSV(object):
 
             unique_values.add(
                 f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                f"{row['Core']}|{row['Type']}|{row['Section']}"
+                f"{row['Core']}|{row['Type']}|{row['Section']}|{row['A/W']}"
             )
 
         for value in unique_values:
@@ -207,6 +207,7 @@ class Import_Lithology_CSV(object):
                 core_name,
                 core_type,
                 section_name,
+                aw,
             ) = value.split("|")
 
             section = find_section(
@@ -217,6 +218,7 @@ class Import_Lithology_CSV(object):
                     "core_name": core_name,
                     "core_type": core_type,
                     "section_name": section_name,
+                    "section_aw": aw,
                 }
             )
             if not section.first():
@@ -235,6 +237,7 @@ class Import_Lithology_CSV(object):
                         {
                             "name": section_name,
                             "core_id": core["id"],
+                            "aw": aw,
                             "data_source_notes": filename,
                         }
                     )
@@ -259,10 +262,11 @@ class Import_Lithology_CSV(object):
                     "core_name": row["Core"],
                     "core_type": row["Type"],
                     "section_name": row["Section"],
-                    "aw": row["A/W"],
+                    "section_aw": row["A/W"],
                     "sample_name": row["Sample"],
                     "top": row["Top [cm]"],
                     "bottom": row["Bottom [cm]"],
+                    "principal_lithology_name": row["Lithology Principal Name"],
                 }
             )
             if not sample.first():
@@ -274,6 +278,7 @@ class Import_Lithology_CSV(object):
                         "core_name": row["Core"],
                         "core_type": row["Type"],
                         "section_name": row["Section"],
+                        "section_aw": row["A/W"],
                     }
                 ).first()
 
@@ -281,7 +286,6 @@ class Import_Lithology_CSV(object):
                     attributes = {
                         "section_id": section["id"],
                         "name": row["Sample"],
-                        "aw": row["A/W"],
                         "top": row["Top [cm]"],
                         "bottom": row["Bottom [cm]"],
                         "top_depth": row["Top Depth [m]"],
