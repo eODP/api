@@ -78,7 +78,7 @@ class Import_Lithology_CSV(object):
     def import_sites_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Site"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(f"{row['Exp']}|{row['Site']}")
@@ -109,7 +109,7 @@ class Import_Lithology_CSV(object):
     def import_holes_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Hole"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
@@ -142,7 +142,7 @@ class Import_Lithology_CSV(object):
     def import_cores_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Core"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(
@@ -191,7 +191,7 @@ class Import_Lithology_CSV(object):
     def import_sections_for_csv(self, csv_reader, filename):
         unique_values = set()
         for row in csv_reader:
-            if row["Exp"] == "" or row["Section"] == "":
+            if row["Exp"] == "":
                 continue
 
             unique_values.add(
@@ -248,7 +248,7 @@ class Import_Lithology_CSV(object):
 
     def import_samples_for_csv(self, csv_reader, filename):
         for row in csv_reader:
-            if row["Exp"] == "" or row["Sample"] == "":
+            if row["Exp"] == "":
                 continue
 
             sample = find_sample(

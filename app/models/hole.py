@@ -9,7 +9,7 @@ class Hole(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     site_id = db.Column(db.Integer, db.ForeignKey("sites.id"))
-    name = db.Column(db.String, nullable=False, index=True)
+    name = db.Column(db.String, index=True)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     water_depth = db.Column(db.Float)
