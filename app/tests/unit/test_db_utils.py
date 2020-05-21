@@ -73,7 +73,31 @@ class TestAddNullQueries:
 
     def test_handles_underscores(self):
         attribute = {"aa_bb": None}
-        string = " table.z_y = :aa_bb"
-        expected = " table.z_y IS NULL"
+        string = " table.z_y = :aa_bb "
+        expected = " table.z_y IS NULL "
+
+        assert add_null_queries(string, attribute) == expected
+
+    def test_handles_keys_that_start_with_same_letters(self):
+        attribute = {
+            "top": None,
+            "bottom": None,
+            "top_depth": None,
+            "bottom_depth": None,
+        }
+
+        string = (
+            "AND samples.top = :top "
+            "AND samples.bottom = :bottom "
+            "AND samples.top_depth = :top_depth "
+            "AND samples.bottom_depth = :bottom_depth;"
+        )
+
+        expected = (
+            "AND samples.top IS NULL "
+            "AND samples.bottom IS NULL "
+            "AND samples.top_depth IS NULL "
+            "AND samples.bottom_depth IS NULL;"
+        )
 
         assert add_null_queries(string, attribute) == expected

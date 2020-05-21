@@ -27,6 +27,6 @@ def add_null_queries(sql, attributes):
     for k, v in attributes.items():
         if v is None and k in sql:
             # NOTE: regex replaces " <text> = :<key>" with " <text> IS NULL"
-            sql = re.sub(rf" ([\w._]+) *= *:{k}", r" \1 IS NULL", sql)
+            sql = re.sub(rf" ([\w._]+) *= *:{k}( |;)", r" \1 IS NULL\2", sql)
 
     return sql

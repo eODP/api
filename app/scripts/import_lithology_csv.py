@@ -266,7 +266,15 @@ class Import_Lithology_CSV(object):
                     "sample_name": row["Sample"],
                     "top": row["Top [cm]"],
                     "bottom": row["Bottom [cm]"],
+                    "top_depth": row["Top Depth [m]"],
+                    "bottom_depth": row["Bottom Depth [m]"],
+                    "principal_lithology_prefix": row["Lithology Prefix"],
                     "principal_lithology_name": row["Lithology Principal Name"],
+                    "principal_lithology_suffix": row["Lithology Suffix"],
+                    "minor_lithology_prefix": row["Minor Lithology Prefix"],
+                    "minor_lithology_name": row["Minor Lithology Name"],
+                    "minor_lithology_suffix": row["Minor Lithology Suffix"],
+                    "data_source_notes": filename,
                 }
             )
             if not sample.first():

@@ -27,7 +27,7 @@ def find_site(params):
         FROM expeditions
         JOIN sites ON expeditions.id = sites.expedition_id
         WHERE expeditions.name = :exp_name
-        AND sites.name = :site_name
+        AND sites.name = :site_name;
     """
     )
 
@@ -54,7 +54,7 @@ def find_hole(params):
         JOIN holes on holes.site_id = sites.id
         WHERE expeditions.name = :exp_name
         AND sites.name = :site_name
-        AND holes.name = :hole_name
+        AND holes.name = :hole_name;
     """
     )
 
@@ -84,7 +84,7 @@ def find_core(params):
         AND sites.name = :site_name
         AND holes.name = :hole_name
         AND cores.name = :core_name
-        AND cores.type = :core_type
+        AND cores.type = :core_type;
     """
     )
 
@@ -123,7 +123,7 @@ def find_section(params):
         AND cores.name = :core_name
         AND cores.type = :core_type
         AND sections.name = :section_name
-        AND sections.aw = :section_aw
+        AND sections.aw = :section_aw;
     """
     )
 
@@ -169,7 +169,15 @@ def find_sample(params):
         AND samples.name = :sample_name
         AND samples.top = :top
         AND samples.bottom = :bottom
+        AND samples.top_depth = :top_depth
+        AND samples.bottom_depth = :bottom_depth
+        AND samples.principal_lithology_prefix = :principal_lithology_prefix
         AND samples.principal_lithology_name = :principal_lithology_name
+        AND samples.principal_lithology_suffix = :principal_lithology_suffix
+        AND samples.minor_lithology_prefix = :minor_lithology_prefix
+        AND samples.minor_lithology_name = :minor_lithology_name
+        AND samples.minor_lithology_suffix = :minor_lithology_suffix
+        AND samples.data_source_notes = :data_source_notes;
     """
     )
 
@@ -184,7 +192,15 @@ def find_sample(params):
         "sample_name",
         "top",
         "bottom",
+        "top_depth",
+        "bottom_depth",
+        "principal_lithology_prefix",
         "principal_lithology_name",
+        "principal_lithology_suffix",
+        "minor_lithology_prefix",
+        "minor_lithology_name",
+        "minor_lithology_suffix",
+        "data_source_notes",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
