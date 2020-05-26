@@ -2,7 +2,7 @@ from tests.factories import HoleFactory
 
 
 def test_GET_holes_works_with_no_hole(client):
-    response = client.get("/holes")
+    response = client.get("/api/holes")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -13,7 +13,7 @@ def test_GET_holes_returns_saved_hole(client):
     hole1 = HoleFactory(name="123", id=1)
     hole2 = HoleFactory(name="456", id=2)
 
-    response = client.get("/holes")
+    response = client.get("/api/holes")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -27,7 +27,7 @@ def test_GET_holes_returns_saved_hole(client):
 def test_GET_holes_detail_returns_hole_based_on_id(client):
     hole = HoleFactory(name="123", id=1)
 
-    response = client.get(f"/holes/{hole.id}")
+    response = client.get(f"/api/holes/{hole.id}")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_GET_holes_detail_returns_hole_based_on_id(client):
 
 
 def test_GET_holes_detail_returns_error_mesage_if_no_match(client):
-    response = client.get(f"/holes/10")
+    response = client.get(f"/api/holes/10")
     data = response.get_json()
 
     assert response.status_code == 404

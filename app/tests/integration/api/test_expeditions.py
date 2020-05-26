@@ -2,7 +2,7 @@ from tests.factories import ExpeditionFactory
 
 
 def test_GET_expeditions_works_with_no_expedition(client):
-    response = client.get("/expeditions")
+    response = client.get("/api/expeditions")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -13,7 +13,7 @@ def test_GET_expeditions_returns_saved_expedition(client):
     exp1 = ExpeditionFactory(name="123", id=1)
     exp2 = ExpeditionFactory(name="456", id=2)
 
-    response = client.get("/expeditions")
+    response = client.get("/api/expeditions")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -27,7 +27,7 @@ def test_GET_expeditions_returns_saved_expedition(client):
 def test_GET_expeditions_detail_returns_expedition_based_on_id(client):
     exp = ExpeditionFactory(name="123", id=1)
 
-    response = client.get(f"/expeditions/{exp.id}")
+    response = client.get(f"/api/expeditions/{exp.id}")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_GET_expeditions_detail_returns_expedition_based_on_id(client):
 
 
 def test_GET_expeditions_detail_returns_error_mesage_if_no_match(client):
-    response = client.get(f"/expeditions/10")
+    response = client.get(f"/api/expeditions/10")
     data = response.get_json()
 
     assert response.status_code == 404

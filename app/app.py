@@ -40,7 +40,7 @@ def register_extensions(app):
 
 
 def register_resources(app):
-    api = Api(app)
+    api = Api(app, prefix="/api")
 
     api.add_resource(ExpeditionListResource, "/expeditions")
     api.add_resource(ExpeditionResource, "/expeditions/<int:id>")
