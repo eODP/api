@@ -52,22 +52,22 @@ class TestTrimDocString:
 class TestAddNullQueries:
     def test_replaces_equality_check_with_IS_NULL_if_value_is_None(self):
         attribute = {"bbb": None}
-        string = " table.b = :bbb"
-        expected = " table.b IS NULL"
+        string = " table.b = :bbb;"
+        expected = " table.b IS NULL;"
 
         assert add_null_queries(string, attribute) == expected
 
     def test_handles_different_whitespaces(self):
         attribute = {"bbb": None}
-        string = " table.b=   :bbb"
-        expected = " table.b IS NULL"
+        string = " table.b=   :bbb;"
+        expected = " table.b IS NULL;"
 
         assert add_null_queries(string, attribute) == expected
 
     def test_handles_multiple_attributes(self):
         attribute = {"aaa": None, "bbb": "value", "ccc": None}
-        string = "AND table.z = :aaa AND table.y = :bbb AND table.x = :ccc"
-        expected = "AND table.z IS NULL AND table.y = :bbb AND table.x IS NULL"
+        string = "AND table.z = :aaa AND table.y = :bbb AND table.x = :ccc;"
+        expected = "AND table.z IS NULL AND table.y = :bbb AND table.x IS NULL;"
 
         assert add_null_queries(string, attribute) == expected
 
