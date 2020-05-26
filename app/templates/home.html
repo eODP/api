@@ -5,21 +5,29 @@
     <title>eODP</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
     />
   </head>
   <body>
     <section class="section">
       <div class="container">
         <h1 class="title">eODP Demo API</h1>
+        <h2>Endpoints</h2>
         <ul>
-          <li><a href="/expeditions">Expeditions</a></li>
-          <li><a href="/sites">Sites</a></li>
-          <li><a href="/holes">Holes</a></li>
-          <li><a href="/cores">Cores</a></li>
-          <li><a href="/sections">Sections</a></li>
-          <li><a href="/samples">Samples</a></li>
+          <li><a href="/api">Summary of API endpoints</a></li>
+          <li><a href="/api/expeditions">Expeditions</a></li>
+          <li><a href="/api/sites">Sites</a></li>
+          <li><a href="/api/holes">Holes</a></li>
+          <li><a href="/api/cores">Cores</a></li>
+          <li><a href="/api/sections">Sections</a></li>
+          <li><a href="/api/samples">Samples</a></li>
         </ul>
+
+        <h2>Misc</h2>
+
+        <p>Pagination: /api/resources?page=page_number</p>
       </div>
     </section>
   </body>

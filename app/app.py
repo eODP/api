@@ -4,6 +4,7 @@ from flask import Flask, render_template
 from flask_restful import Api
 
 from extension import db, migrate, ma
+from resources.api_home import ApiHomeResource
 from resources.expedition import ExpeditionListResource, ExpeditionResource
 from resources.site import SiteListResource, SiteResource
 from resources.hole import HoleListResource, HoleResource
@@ -42,6 +43,7 @@ def register_extensions(app):
 def register_resources(app):
     api = Api(app, prefix="/api")
 
+    api.add_resource(ApiHomeResource, "/")
     api.add_resource(ExpeditionListResource, "/expeditions")
     api.add_resource(ExpeditionResource, "/expeditions/<int:id>")
     api.add_resource(SiteListResource, "/sites")
