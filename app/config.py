@@ -9,6 +9,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL_ORM")
     SECRET_KEY = os.environ.get("APP_SECRET_KEY")
     PER_PAGE = 20
+    # Pretty print JSON:  https://github.com/flask-restful/flask-restful/issues/649
+    RESTFUL_JSON = {"indent": 4}
 
 
 class DevelopmentConfig(Config):
