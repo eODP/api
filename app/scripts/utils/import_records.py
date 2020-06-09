@@ -331,7 +331,8 @@ def find_sample(params):
         AND samples.bottom = :bottom
         AND samples.top_depth = :top_depth
         AND samples.bottom_depth = :bottom_depth
-        AND samples.data_source_notes = :data_source_notes;
+        AND samples.data_source_notes = :data_source_notes
+        AND samples.data_source_type = :data_source_type;
     """
     )
 
@@ -349,6 +350,7 @@ def find_sample(params):
         "top_depth",
         "bottom_depth",
         "data_source_notes",
+        "data_source_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
@@ -383,7 +385,8 @@ def find_lithology_sample(params):
         AND samples.minor_lithology_prefix = :minor_lithology_prefix
         AND samples.minor_lithology_name = :minor_lithology_name
         AND samples.minor_lithology_suffix = :minor_lithology_suffix
-        AND samples.data_source_notes = :data_source_notes;
+        AND samples.data_source_notes = :data_source_notes
+        AND samples.data_source_type = :data_source_type;
     """
     )
 
@@ -407,6 +410,7 @@ def find_lithology_sample(params):
         "minor_lithology_name",
         "minor_lithology_suffix",
         "data_source_notes",
+        "data_source_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
@@ -429,6 +433,7 @@ def create_sample(params):
         "minor_lithology_suffix",
         "raw_data",
         "data_source_notes",
+        "data_source_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
 

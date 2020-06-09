@@ -125,6 +125,7 @@ class Import_Lithology_CSV(object):
                     "minor_lithology_name": row["Minor Lithology Name"],
                     "minor_lithology_suffix": row["Minor Lithology Suffix"],
                     "data_source_notes": filename,
+                    "data_source_type": "lithology csv",
                 }
             )
             if not sample.first():
@@ -156,6 +157,7 @@ class Import_Lithology_CSV(object):
                         "minor_lithology_suffix": row["Minor Lithology Suffix"],
                         "raw_data": row,
                         "data_source_notes": filename,
+                        "data_source_type": "lithology csv",
                     }
                     create_sample(attributes)
 

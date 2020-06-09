@@ -26,6 +26,7 @@ class Sample(db.Model):
     raw_data = db.Column(JSONB)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text, index=True)
+    data_source_type = db.Column(db.String)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     section = db.relationship("Section")

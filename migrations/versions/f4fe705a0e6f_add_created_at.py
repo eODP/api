@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker
 
 Session = sessionmaker()
 
-
 # revision identifiers, used by Alembic.
 revision = "f4fe705a0e6f"
 down_revision = "2ac96cb22a98"
