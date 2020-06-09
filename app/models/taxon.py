@@ -9,6 +9,7 @@ class Taxon(db.Model):
     name = db.Column(db.String, nullable=False)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
+    taxon_group = db.Column(db.String, nullable=False)
 
     @classmethod
     def find_all(cls, page):
