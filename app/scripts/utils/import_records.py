@@ -5,6 +5,7 @@ from models.hole import Hole
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
+from models.taxon import Taxon
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
@@ -432,4 +433,16 @@ def create_sample(params):
     attributes = allowed_params(allowed_attributes, params)
 
     record = Sample(**attributes)
+    record.save()
+
+
+def create_taxon(params):
+    allowed_attributes = [
+        "name",
+        "verbatim_name",
+        "taxon_group",
+    ]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = Taxon(**attributes)
     record.save()

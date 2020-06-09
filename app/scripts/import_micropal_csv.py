@@ -22,11 +22,14 @@ from scripts.utils.import_records import (  # noqa: F402
     find_section,
     find_sample,
     create_sample,
+    create_taxon,
 )
 
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
+TAXA_CSV = f"{FILE_PATH}/taxa_list.csv"
+NONTAXA_CSV = f"{FILE_PATH}/non_taxa_fields.csv"
 
 # ======================
 # create app
@@ -149,6 +152,18 @@ class Import_Micropal_CSV(object):
                         "data_source_notes": filename,
                     }
                     create_sample(attributes)
+
+    def import_taxa(self):
+        with open(TAXA_CSV, mode="r") as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                create_taxon(
+                    {
+                        "name": row["name"],
+                        "verbatim_name": row["verbatim_name"],
+                        "taxon_group": row["taxon_group"],
+                    }
+                )
 
 
 if __name__ == "__main__":
