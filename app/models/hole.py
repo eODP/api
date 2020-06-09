@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 
@@ -34,6 +36,7 @@ class Hole(db.Model):
     rig_floor_to_sea_level = db.Column(db.Float)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     site = db.relationship("Site")
     cores = db.relationship(Core, lazy="dynamic")

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 
@@ -9,6 +11,7 @@ class SampleTaxon(db.Model):
     sample_id = db.Column(db.Integer, db.ForeignKey("samples.id"))
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
     code = db.Column(db.String)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     sample = db.relationship("Sample")
     taxon = db.relationship("Taxon")

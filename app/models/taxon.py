@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 
@@ -10,6 +12,7 @@ class Taxon(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
     taxon_group = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     @classmethod
     def find_all(cls, page):

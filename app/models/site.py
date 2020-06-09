@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 from models.hole import Hole
@@ -11,6 +13,7 @@ class Site(db.Model):
     name = db.Column(db.String, index=True)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     expedition = db.relationship("Expedition")
     holes = db.relationship(Hole, lazy="dynamic")

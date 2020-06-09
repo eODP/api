@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 from sqlalchemy.dialects.postgresql.json import JSONB
@@ -24,6 +26,7 @@ class Sample(db.Model):
     raw_data = db.Column(JSONB)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     section = db.relationship("Section")
 
