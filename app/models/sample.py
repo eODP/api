@@ -1,8 +1,11 @@
 from datetime import datetime
 
+from sqlalchemy.dialects.postgresql.json import JSONB
+
 from extension import db
 from models.pagination import paginate
-from sqlalchemy.dialects.postgresql.json import JSONB
+from models.taxon import Taxon  # noqa F401
+from models.sample_taxon import SampleTaxon  # noqa F401
 
 
 class Sample(db.Model):
@@ -30,6 +33,7 @@ class Sample(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     section = db.relationship("Section")
+    taxa = db.relationship("Taxon", secondary="samples_taxa")
 
     @classmethod
     def find_all(cls, page):

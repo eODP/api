@@ -7,3 +7,6 @@ class TaxonSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Taxon
+
+    link = ma.Hyperlinks(ma.URLFor("taxonresource", id="<id>"))
+    samples = ma.List(ma.Nested("SampleSchema", only=("name", "link")))

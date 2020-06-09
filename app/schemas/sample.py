@@ -8,3 +8,4 @@ class SampleSchema(ma.SQLAlchemyAutoSchema):
 
     link = ma.Hyperlinks(ma.URLFor("sampleresource", id="<id>"))
     section = ma.Nested("SectionSchema", only=("link", "name"))
+    taxa = ma.List(ma.Nested("TaxonSchema", only=("name", "link")))
