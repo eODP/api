@@ -14,18 +14,19 @@ if os.environ.get("ENV") == "Production":
 
 from extension import db, ma  # noqa: F402
 from scripts.utils.import_records import (  # noqa: F402
-    create_expedition,
+    import_expedition_for_csv,
     import_sites_for_csv,
     import_holes_for_csv,
     import_cores_for_csv,
     import_sections_for_csv,
     find_section,
-    find_lithology_sample,
+    find_sample,
     create_sample,
 )
 
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
-LITHOLOGY_CSVS = glob.glob(f"{FILE_PATH}/Lithology_CSV/*.csv")
+MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
 
 # ======================
 # create app
@@ -52,50 +53,52 @@ app.app_context().push()
 # ======================
 
 
-class Import_Lithology_CSV(object):
+class Import_Micropal_CSV(object):
     def clear_table(self, table):
         db.engine.execute(f"TRUNCATE {table} RESTART IDENTITY CASCADE;")
 
     def import_expeditions(self):
-        file = f"{FILE_PATH}/get_expeditions_from_crosswalk/expeditions.csv"
-
-        with open(file, mode="r") as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for row in csv_reader:
-                create_expedition(row)
+        for path in MICROPAL_CSVS:
+            filename = path.split("/")[-1]
+            with open(path, mode="r") as csv_file:
+                csv_reader = csv.DictReader(csv_file)
+                import_expedition_for_csv(csv_reader, filename)
 
     def import_sites(self):
-        for path in LITHOLOGY_CSVS:
+        for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_sites_for_csv(csv_reader, filename)
 
     def import_holes(self):
-        for path in LITHOLOGY_CSVS:
+        for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_holes_for_csv(csv_reader, filename)
 
     def import_cores(self):
-        for path in LITHOLOGY_CSVS:
+        for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_cores_for_csv(csv_reader, filename)
 
     def import_sections(self):
-        for path in LITHOLOGY_CSVS:
+        for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_sections_for_csv(csv_reader, filename)
 
     def import_samples(self):
-        for path in LITHOLOGY_CSVS:
+        for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
-            with open(path, mode="r") as csv_file:
+            print(filename)
+
+            # add encoding because some CSVs have BOM added to the first key
+            with open(path, mode="r", encoding="utf-8-sig") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 self.import_samples_for_csv(csv_reader, filename)
 
@@ -104,7 +107,7 @@ class Import_Lithology_CSV(object):
             if row["Exp"] == "":
                 continue
 
-            sample = find_lithology_sample(
+            sample = find_sample(
                 {
                     "exp_name": row["Exp"],
                     "site_name": row["Site"],
@@ -118,12 +121,6 @@ class Import_Lithology_CSV(object):
                     "bottom": row["Bottom [cm]"],
                     "top_depth": row["Top Depth [m]"],
                     "bottom_depth": row["Bottom Depth [m]"],
-                    "principal_lithology_prefix": row["Lithology Prefix"],
-                    "principal_lithology_name": row["Lithology Principal Name"],
-                    "principal_lithology_suffix": row["Lithology Suffix"],
-                    "minor_lithology_prefix": row["Minor Lithology Prefix"],
-                    "minor_lithology_name": row["Minor Lithology Name"],
-                    "minor_lithology_suffix": row["Minor Lithology Suffix"],
                     "data_source_notes": filename,
                 }
             )
@@ -148,12 +145,6 @@ class Import_Lithology_CSV(object):
                         "bottom": row["Bottom [cm]"],
                         "top_depth": row["Top Depth [m]"],
                         "bottom_depth": row["Bottom Depth [m]"],
-                        "principal_lithology_prefix": row["Lithology Prefix"],
-                        "principal_lithology_name": row["Lithology Principal Name"],
-                        "principal_lithology_suffix": row["Lithology Suffix"],
-                        "minor_lithology_prefix": row["Minor Lithology Prefix"],
-                        "minor_lithology_name": row["Minor Lithology Name"],
-                        "minor_lithology_suffix": row["Minor Lithology Suffix"],
                         "raw_data": row,
                         "data_source_notes": filename,
                     }
@@ -161,4 +152,4 @@ class Import_Lithology_CSV(object):
 
 
 if __name__ == "__main__":
-    fire.Fire(Import_Lithology_CSV)
+    fire.Fire(Import_Micropal_CSV)
