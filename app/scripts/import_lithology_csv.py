@@ -97,9 +97,9 @@ class Import_Lithology_CSV(object):
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_samples_for_csv(csv_reader, filename)
+                self._import_samples_for_csv(csv_reader, filename)
 
-    def import_samples_for_csv(self, csv_reader, filename):
+    def _import_samples_for_csv(self, csv_reader, filename):
         for row in csv_reader:
             if row["Exp"] == "":
                 continue

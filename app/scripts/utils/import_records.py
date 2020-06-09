@@ -1,3 +1,5 @@
+import csv
+
 from extension import db
 from models.core import Core
 from models.expedition import Expedition
@@ -6,6 +8,7 @@ from models.sample import Sample
 from models.section import Section
 from models.site import Site
 from models.taxon import Taxon
+from models.sample_taxon import SampleTaxon
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
@@ -451,3 +454,68 @@ def create_taxon(params):
 
     record = Taxon(**attributes)
     record.save()
+
+
+def find_taxon_by_verbatim_name(params):
+    return Taxon.query.filter_by(
+        verbatim_name=params["verbatim_name"], taxon_group=params["taxon_group"]
+    ).first()
+
+
+def create_sample_taxon(params):
+    allowed_attributes = [
+        "sample_id",
+        "taxon_id",
+        "code",
+        "data_source_notes",
+    ]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = SampleTaxon(**attributes)
+    record.save()
+
+
+def fetch_nontaxa_fields(nontaxa_csv):
+    nontaxa_fields = set()
+
+    with open(nontaxa_csv, mode="r") as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            nontaxa_fields.add(row["field"])
+
+    return nontaxa_fields
+
+
+def fetch_file_taxon_groups(metadata_csvs):
+    taxon_groups = {}
+
+    for path in metadata_csvs:
+        with open(path, mode="r") as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                taxon_groups[row["file"]] = row["taxon_group"]
+
+    return taxon_groups
+
+
+def fetch_taxa_columns(csv_reader, nontaxa_fields):
+    all_taxa_columns = set(csv_reader.fieldnames) - nontaxa_fields
+    taxa_columns = set()
+
+    for row in csv_reader:
+        for taxon in all_taxa_columns:
+            if row[taxon] and taxon != "":
+                taxa_columns.add(taxon)
+    return taxa_columns
+
+
+def fetch_taxa_ids(taxon_group, taxa_columns):
+    taxa_dict = {}
+    for name in taxa_columns:
+        # TODO: update find_taxon once Leah sends finalized taxa names
+        taxon = find_taxon_by_verbatim_name(
+            {"verbatim_name": name.strip(), "taxon_group": taxon_group}
+        )
+        taxa_dict[name] = taxon.id
+
+    return taxa_dict
