@@ -11,6 +11,8 @@ class SampleTaxon(db.Model):
     sample_id = db.Column(db.Integer, db.ForeignKey("samples.id"))
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
     code = db.Column(db.String)
+    data_source_url = db.Column(db.String)
+    data_source_notes = db.Column(db.Text, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     sample = db.relationship("Sample")
