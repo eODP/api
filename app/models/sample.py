@@ -36,8 +36,14 @@ class Sample(db.Model):
     taxa = db.relationship("Taxon", secondary="samples_taxa")
 
     @classmethod
-    def find_all(cls, page):
-        return paginate(cls.query.order_by("name"), page)
+    def find_all(cls, page, data_source_type):
+        query = cls.query.order_by("name")
+        if data_source_type == "lithology":
+            query = query.filter_by(data_source_type="lithology csv")
+        elif data_source_type == "micropal":
+            query = query.filter_by(data_source_type="micropal csv")
+
+        return paginate(query, page)
 
     @classmethod
     def find_by_id(cls, id):

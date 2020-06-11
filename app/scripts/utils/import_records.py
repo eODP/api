@@ -166,7 +166,7 @@ def import_cores_for_csv(csv_reader, filename):
         )
         if not core.first():
             hole = find_hole(
-                {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name,}
+                {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name}
             ).first()
 
             if hole:
@@ -456,6 +456,7 @@ def create_taxon(params):
     record.save()
 
 
+# TODO: might need to refactor after Leah finalizes the taxa names
 def find_taxon_by_verbatim_name(params):
     return Taxon.query.filter_by(
         verbatim_name=params["verbatim_name"], taxon_group=params["taxon_group"]

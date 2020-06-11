@@ -30,7 +30,6 @@ from scripts.utils.import_records import (  # noqa: F402
     fetch_taxa_columns,
     fetch_taxa_ids,
 )
-from scripts.utils.pandas_utils import csv_cleanup  # noqa: F402
 
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
