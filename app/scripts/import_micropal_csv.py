@@ -23,7 +23,6 @@ from scripts.utils.import_records import (  # noqa: F402
     find_sample,
     create_sample,
     create_taxon,
-    find_taxon_by_verbatim_name,
     create_sample_taxon,
     fetch_nontaxa_fields,
     fetch_file_taxon_groups,
@@ -103,6 +102,8 @@ class Import_Micropal_CSV(object):
     def import_sections(self):
         for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
+            print(filename)
+
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_sections_for_csv(csv_reader, filename)

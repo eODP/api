@@ -88,6 +88,8 @@ class Import_Lithology_CSV(object):
     def import_sections(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
+            print(filename)
+
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 import_sections_for_csv(csv_reader, filename)
@@ -95,6 +97,8 @@ class Import_Lithology_CSV(object):
     def import_samples(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
+            print(filename)
+
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 self._import_samples_for_csv(csv_reader, filename)
