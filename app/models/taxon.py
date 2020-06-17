@@ -13,7 +13,7 @@ class Taxon(db.Model):
     taxon_group = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    samples = db.relationship("Sample", secondary="samples_taxa")
+    samples = db.relationship("SampleTaxon", back_populates="taxon")
 
     @classmethod
     def find_all(cls, page):

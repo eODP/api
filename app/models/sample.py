@@ -33,7 +33,7 @@ class Sample(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     section = db.relationship("Section")
-    taxa = db.relationship("Taxon", secondary="samples_taxa")
+    taxa = db.relationship("SampleTaxon", back_populates="sample")
 
     @classmethod
     def find_all(cls, page, data_source_type):

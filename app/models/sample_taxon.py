@@ -15,8 +15,8 @@ class SampleTaxon(db.Model):
     data_source_notes = db.Column(db.Text, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    sample = db.relationship("Sample")
-    taxon = db.relationship("Taxon")
+    sample = db.relationship("Sample", back_populates="taxa")
+    taxon = db.relationship("Taxon", back_populates="samples")
 
     @classmethod
     def find_all(cls, page):
