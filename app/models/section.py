@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 from models.sample import Sample
@@ -26,6 +28,7 @@ class Section(db.Model):
     comments = db.Column(db.Text)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     core = db.relationship("Core")
     samples = db.relationship(Sample, lazy="dynamic")

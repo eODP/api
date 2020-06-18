@@ -1,3 +1,5 @@
+import csv
+
 from extension import db
 from models.core import Core
 from models.expedition import Expedition
@@ -5,7 +7,23 @@ from models.hole import Hole
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
+from models.taxon import Taxon
+from models.sample_taxon import SampleTaxon
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
+
+
+def import_expedition_for_csv(csv_reader, filename):
+    unique_values = set()
+    for row in csv_reader:
+        if row["Exp"] == "":
+            continue
+
+        unique_values.add(row["Exp"])
+
+    for exp_name in unique_values:
+        expedition = find_expedition({"name": exp_name})
+        if not expedition:
+            create_expedition({"name": exp_name})
 
 
 def find_expedition(params):
@@ -18,6 +36,31 @@ def create_expedition(params):
 
     record = Expedition(**attributes)
     record.save()
+
+
+def import_sites_for_csv(csv_reader, filename):
+    unique_values = set()
+    for row in csv_reader:
+        if row["Exp"] == "":
+            continue
+
+        unique_values.add(f"{row['Exp']}|{row['Site']}")
+
+    for value in unique_values:
+        exp_name, site_name = value.split("|")
+
+        site = find_site({"exp_name": exp_name, "site_name": site_name})
+        if not site.first():
+            expedition = find_expedition({"name": exp_name})
+
+            if expedition:
+                create_site(
+                    {
+                        "name": site_name,
+                        "expedition_id": expedition.id,
+                        "data_source_notes": filename,
+                    }
+                )
 
 
 def find_site(params):
@@ -45,6 +88,33 @@ def create_site(params):
     record.save()
 
 
+def import_holes_for_csv(csv_reader, filename):
+    unique_values = set()
+    for row in csv_reader:
+        if row["Exp"] == "":
+            continue
+
+        unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
+
+    for value in unique_values:
+        exp_name, site_name, hole_name = value.split("|")
+
+        hole = find_hole(
+            {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name}
+        )
+        if not hole.first():
+            site = find_site({"exp_name": exp_name, "site_name": site_name}).first()
+
+            if site:
+                create_hole(
+                    {
+                        "name": hole_name,
+                        "site_id": site["id"],
+                        "data_source_notes": filename,
+                    }
+                )
+
+
 def find_hole(params):
     sql = trim_doc_string(
         """
@@ -70,6 +140,44 @@ def create_hole(params):
 
     record = Hole(**attributes)
     record.save()
+
+
+def import_cores_for_csv(csv_reader, filename):
+    unique_values = set()
+    for row in csv_reader:
+        if row["Exp"] == "":
+            continue
+
+        unique_values.add(
+            f"{row['Exp']}|{row['Site']}|{row['Hole']}|" f"{row['Core']}|{row['Type']}"
+        )
+
+    for value in unique_values:
+        exp_name, site_name, hole_name, core_name, core_type = value.split("|")
+
+        core = find_core(
+            {
+                "exp_name": exp_name,
+                "site_name": site_name,
+                "hole_name": hole_name,
+                "core_name": core_name,
+                "core_type": core_type,
+            }
+        )
+        if not core.first():
+            hole = find_hole(
+                {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name}
+            ).first()
+
+            if hole:
+                create_core(
+                    {
+                        "name": core_name,
+                        "type": core_type,
+                        "hole_id": hole["id"],
+                        "data_source_notes": filename,
+                    }
+                )
 
 
 def find_core(params):
@@ -106,6 +214,61 @@ def create_core(params):
 
     record = Core(**attributes)
     record.save()
+
+
+def import_sections_for_csv(csv_reader, filename):
+    unique_values = set()
+    for row in csv_reader:
+        if row["Exp"] == "":
+            continue
+
+        unique_values.add(
+            f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
+            f"{row['Core']}|{row['Type']}|{row['Section']}|{row['A/W']}"
+        )
+
+    for value in unique_values:
+        (
+            exp_name,
+            site_name,
+            hole_name,
+            core_name,
+            core_type,
+            section_name,
+            aw,
+        ) = value.split("|")
+
+        section = find_section(
+            {
+                "exp_name": exp_name,
+                "site_name": site_name,
+                "hole_name": hole_name,
+                "core_name": core_name,
+                "core_type": core_type,
+                "section_name": section_name,
+                "section_aw": aw,
+            }
+        )
+        if not section.first():
+            core = find_core(
+                {
+                    "exp_name": exp_name,
+                    "site_name": site_name,
+                    "hole_name": hole_name,
+                    "core_name": core_name,
+                    "core_type": core_type,
+                }
+            ).first()
+
+            if core:
+                create_section(
+                    {
+                        "name": section_name,
+                        "core_id": core["id"],
+                        "aw": aw,
+                        "data_source_notes": filename,
+                    }
+                )
 
 
 def find_section(params):
@@ -171,13 +334,62 @@ def find_sample(params):
         AND samples.bottom = :bottom
         AND samples.top_depth = :top_depth
         AND samples.bottom_depth = :bottom_depth
+        AND samples.data_source_notes = :data_source_notes
+        AND samples.data_source_type = :data_source_type;
+    """
+    )
+
+    allowed_attributes = [
+        "exp_name",
+        "site_name",
+        "hole_name",
+        "core_name",
+        "core_type",
+        "section_name",
+        "section_aw",
+        "sample_name",
+        "top",
+        "bottom",
+        "top_depth",
+        "bottom_depth",
+        "data_source_notes",
+        "data_source_type",
+    ]
+    attributes = allowed_params(allowed_attributes, params)
+    sql = add_null_queries(sql, attributes)
+    return db.session.execute(sql, attributes)
+
+
+def find_lithology_sample(params):
+    sql = trim_doc_string(
+        """
+        SELECT samples.*
+        FROM expeditions
+        JOIN sites ON expeditions.id = sites.expedition_id
+        JOIN holes on holes.site_id = sites.id
+        JOIN cores on cores.hole_id = holes.id
+        JOIN sections on sections.core_id = cores.id
+        JOIN samples on samples.section_id = sections.id
+        WHERE expeditions.name = :exp_name
+        AND sites.name = :site_name
+        AND holes.name = :hole_name
+        AND cores.name = :core_name
+        AND cores.type = :core_type
+        AND sections.name = :section_name
+        AND sections.aw = :section_aw
+        AND samples.name = :sample_name
+        AND samples.top = :top
+        AND samples.bottom = :bottom
+        AND samples.top_depth = :top_depth
+        AND samples.bottom_depth = :bottom_depth
         AND samples.principal_lithology_prefix = :principal_lithology_prefix
         AND samples.principal_lithology_name = :principal_lithology_name
         AND samples.principal_lithology_suffix = :principal_lithology_suffix
         AND samples.minor_lithology_prefix = :minor_lithology_prefix
         AND samples.minor_lithology_name = :minor_lithology_name
         AND samples.minor_lithology_suffix = :minor_lithology_suffix
-        AND samples.data_source_notes = :data_source_notes;
+        AND samples.data_source_notes = :data_source_notes
+        AND samples.data_source_type = :data_source_type;
     """
     )
 
@@ -201,6 +413,7 @@ def find_sample(params):
         "minor_lithology_name",
         "minor_lithology_suffix",
         "data_source_notes",
+        "data_source_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
     sql = add_null_queries(sql, attributes)
@@ -223,8 +436,87 @@ def create_sample(params):
         "minor_lithology_suffix",
         "raw_data",
         "data_source_notes",
+        "data_source_type",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Sample(**attributes)
     record.save()
+
+
+def create_taxon(params):
+    allowed_attributes = [
+        "name",
+        "verbatim_name",
+        "taxon_group",
+    ]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = Taxon(**attributes)
+    record.save()
+
+
+# TODO: might need to refactor after Leah finalizes the taxa names
+def find_taxon_by_verbatim_name(params):
+    return Taxon.query.filter_by(
+        verbatim_name=params["verbatim_name"], taxon_group=params["taxon_group"]
+    ).first()
+
+
+def create_sample_taxon(params):
+    allowed_attributes = [
+        "sample_id",
+        "taxon_id",
+        "code",
+        "data_source_notes",
+    ]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = SampleTaxon(**attributes)
+    record.save()
+
+
+def fetch_nontaxa_fields(nontaxa_csv):
+    nontaxa_fields = set()
+
+    with open(nontaxa_csv, mode="r") as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            nontaxa_fields.add(row["field"])
+
+    return nontaxa_fields
+
+
+def fetch_file_taxon_groups(metadata_csvs):
+    taxon_groups = {}
+
+    for path in metadata_csvs:
+        with open(path, mode="r") as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                taxon_groups[row["file"]] = row["taxon_group"]
+
+    return taxon_groups
+
+
+def fetch_taxa_columns(csv_reader, nontaxa_fields):
+    all_taxa_columns = set(csv_reader.fieldnames) - nontaxa_fields
+    taxa_columns = set()
+
+    for row in csv_reader:
+        for taxon in all_taxa_columns:
+            if row[taxon] and taxon != "":
+                taxa_columns.add(taxon)
+    return taxa_columns
+
+
+def fetch_taxa_ids(taxon_group, taxa_columns):
+    taxa_dict = {}
+    for name in taxa_columns:
+        # TODO: update find_taxon once Leah sends finalized taxa names
+        taxon = find_taxon_by_verbatim_name(
+            {"verbatim_name": name.strip(), "taxon_group": taxon_group}
+        )
+        taxa_dict[name] = taxon.id
+
+    return taxa_dict

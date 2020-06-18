@@ -1,6 +1,11 @@
+from datetime import datetime
+
+from sqlalchemy.dialects.postgresql.json import JSONB
+
 from extension import db
 from models.pagination import paginate
-from sqlalchemy.dialects.postgresql.json import JSONB
+from models.taxon import Taxon  # noqa F401
+from models.sample_taxon import SampleTaxon  # noqa F401
 
 
 class Sample(db.Model):
@@ -24,12 +29,21 @@ class Sample(db.Model):
     raw_data = db.Column(JSONB)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text, index=True)
+    data_source_type = db.Column(db.String)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     section = db.relationship("Section")
+    taxa = db.relationship("SampleTaxon", back_populates="sample")
 
     @classmethod
-    def find_all(cls, page):
-        return paginate(cls.query.order_by("name"), page)
+    def find_all(cls, page, data_source_type):
+        query = cls.query.order_by("name")
+        if data_source_type == "lithology":
+            query = query.filter_by(data_source_type="lithology csv")
+        elif data_source_type == "micropal":
+            query = query.filter_by(data_source_type="micropal csv")
+
+        return paginate(query, page)
 
     @classmethod
     def find_by_id(cls, id):

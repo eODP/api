@@ -11,10 +11,7 @@ from resources.hole import HoleListResource, HoleResource
 from resources.core import CoreListResource, CoreResource
 from resources.section import SectionListResource, SectionResource
 from resources.sample import SampleListResource, SampleResource
-
-# NOTE: temporarily import models in app.py so migrations will work
-from models.sample_taxon import SampleTaxon  # noqa: F401
-from models.taxon import Taxon  # noqa: F401
+from resources.taxon import TaxonListResource, TaxonResource
 
 
 def create_app():
@@ -56,6 +53,8 @@ def register_resources(app):
     api.add_resource(SectionResource, "/sections/<int:id>")
     api.add_resource(SampleListResource, "/samples")
     api.add_resource(SampleResource, "/samples/<int:id>")
+    api.add_resource(TaxonListResource, "/taxa")
+    api.add_resource(TaxonResource, "/taxa/<int:id>")
 
     @app.route("/")
     def home():

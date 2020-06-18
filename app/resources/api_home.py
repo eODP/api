@@ -73,6 +73,16 @@ class ApiHomeResource(Resource):
                     "methods": "GET",
                     "url": "/api/sites/<id>",
                 },
+                {
+                    "description": "Returns all taxa",
+                    "methods": "GET",
+                    "url": "/api/taxa",
+                },
+                {
+                    "description": "Returns one taxa",
+                    "methods": "GET",
+                    "url": "/api/taxa/<id>",
+                },
             ],
             "v": 0.1,
         }

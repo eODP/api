@@ -14,17 +14,13 @@ if os.environ.get("ENV") == "Production":
 
 from extension import db, ma  # noqa: F402
 from scripts.utils.import_records import (  # noqa: F402
-    find_expedition,
     create_expedition,
-    find_site,
-    create_site,
-    find_hole,
-    create_hole,
-    find_core,
-    create_core,
+    import_sites_for_csv,
+    import_holes_for_csv,
+    import_cores_for_csv,
+    import_sections_for_csv,
     find_section,
-    create_section,
-    find_sample,
+    find_lithology_sample,
     create_sample,
 )
 
@@ -73,188 +69,46 @@ class Import_Lithology_CSV(object):
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_sites_for_csv(csv_reader, filename)
-
-    def import_sites_for_csv(self, csv_reader, filename):
-        unique_values = set()
-        for row in csv_reader:
-            if row["Exp"] == "":
-                continue
-
-            unique_values.add(f"{row['Exp']}|{row['Site']}")
-
-        for value in unique_values:
-            exp_name, site_name = value.split("|")
-
-            site = find_site({"exp_name": exp_name, "site_name": site_name})
-            if not site.first():
-                expedition = find_expedition({"name": exp_name})
-
-                if expedition:
-                    create_site(
-                        {
-                            "name": site_name,
-                            "expedition_id": expedition.id,
-                            "data_source_notes": filename,
-                        }
-                    )
+                import_sites_for_csv(csv_reader, filename)
 
     def import_holes(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_holes_for_csv(csv_reader, filename)
-
-    def import_holes_for_csv(self, csv_reader, filename):
-        unique_values = set()
-        for row in csv_reader:
-            if row["Exp"] == "":
-                continue
-
-            unique_values.add(f"{row['Exp']}|{row['Site']}|{row['Hole']}")
-
-        for value in unique_values:
-            exp_name, site_name, hole_name = value.split("|")
-
-            hole = find_hole(
-                {"exp_name": exp_name, "site_name": site_name, "hole_name": hole_name}
-            )
-            if not hole.first():
-                site = find_site({"exp_name": exp_name, "site_name": site_name}).first()
-
-                if site:
-                    create_hole(
-                        {
-                            "name": hole_name,
-                            "site_id": site["id"],
-                            "data_source_notes": filename,
-                        }
-                    )
+                import_holes_for_csv(csv_reader, filename)
 
     def import_cores(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_cores_for_csv(csv_reader, filename)
-
-    def import_cores_for_csv(self, csv_reader, filename):
-        unique_values = set()
-        for row in csv_reader:
-            if row["Exp"] == "":
-                continue
-
-            unique_values.add(
-                f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                f"{row['Core']}|{row['Type']}"
-            )
-
-        for value in unique_values:
-            exp_name, site_name, hole_name, core_name, core_type = value.split("|")
-
-            core = find_core(
-                {
-                    "exp_name": exp_name,
-                    "site_name": site_name,
-                    "hole_name": hole_name,
-                    "core_name": core_name,
-                    "core_type": core_type,
-                }
-            )
-            if not core.first():
-                hole = find_hole(
-                    {
-                        "exp_name": exp_name,
-                        "site_name": site_name,
-                        "hole_name": hole_name,
-                    }
-                ).first()
-
-                if hole:
-                    create_core(
-                        {
-                            "name": core_name,
-                            "type": core_type,
-                            "hole_id": hole["id"],
-                            "data_source_notes": filename,
-                        }
-                    )
+                import_cores_for_csv(csv_reader, filename)
 
     def import_sections(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
+            print(filename)
+
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_sections_for_csv(csv_reader, filename)
-
-    def import_sections_for_csv(self, csv_reader, filename):
-        unique_values = set()
-        for row in csv_reader:
-            if row["Exp"] == "":
-                continue
-
-            unique_values.add(
-                f"{row['Exp']}|{row['Site']}|{row['Hole']}|"
-                f"{row['Core']}|{row['Type']}|{row['Section']}|{row['A/W']}"
-            )
-
-        for value in unique_values:
-            (
-                exp_name,
-                site_name,
-                hole_name,
-                core_name,
-                core_type,
-                section_name,
-                aw,
-            ) = value.split("|")
-
-            section = find_section(
-                {
-                    "exp_name": exp_name,
-                    "site_name": site_name,
-                    "hole_name": hole_name,
-                    "core_name": core_name,
-                    "core_type": core_type,
-                    "section_name": section_name,
-                    "section_aw": aw,
-                }
-            )
-            if not section.first():
-                core = find_core(
-                    {
-                        "exp_name": exp_name,
-                        "site_name": site_name,
-                        "hole_name": hole_name,
-                        "core_name": core_name,
-                        "core_type": core_type,
-                    }
-                ).first()
-
-                if core:
-                    create_section(
-                        {
-                            "name": section_name,
-                            "core_id": core["id"],
-                            "aw": aw,
-                            "data_source_notes": filename,
-                        }
-                    )
+                import_sections_for_csv(csv_reader, filename)
 
     def import_samples(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
+            print(filename)
+
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                self.import_samples_for_csv(csv_reader, filename)
+                self._import_samples_for_csv(csv_reader, filename)
 
-    def import_samples_for_csv(self, csv_reader, filename):
+    def _import_samples_for_csv(self, csv_reader, filename):
         for row in csv_reader:
             if row["Exp"] == "":
                 continue
 
-            sample = find_sample(
+            sample = find_lithology_sample(
                 {
                     "exp_name": row["Exp"],
                     "site_name": row["Site"],
@@ -275,6 +129,7 @@ class Import_Lithology_CSV(object):
                     "minor_lithology_name": row["Minor Lithology Name"],
                     "minor_lithology_suffix": row["Minor Lithology Suffix"],
                     "data_source_notes": filename,
+                    "data_source_type": "lithology csv",
                 }
             )
             if not sample.first():
@@ -306,6 +161,7 @@ class Import_Lithology_CSV(object):
                         "minor_lithology_suffix": row["Minor Lithology Suffix"],
                         "raw_data": row,
                         "data_source_notes": filename,
+                        "data_source_type": "lithology csv",
                     }
                     create_sample(attributes)
 

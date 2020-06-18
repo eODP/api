@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 from models.site import Site
@@ -11,6 +13,7 @@ class Expedition(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
     workbook_tab_name = db.Column(db.String)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     sites = db.relationship(Site, lazy="dynamic")
 

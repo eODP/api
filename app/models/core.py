@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extension import db
 from models.pagination import paginate
 from models.section import Section
@@ -23,6 +25,7 @@ class Core(db.Model):
     label_id = db.Column(db.String)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     hole = db.relationship("Hole")
     sections = db.relationship(Section, lazy="dynamic")

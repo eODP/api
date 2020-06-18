@@ -13,8 +13,12 @@ sample_list_schema = SampleSchema(many=True)
 class SampleListResource(Resource):
     def get(self):
         page = request.args.get("page", 1, type=int)
+        data_source_type = request.args.get("data_source_type", "", type=str)
 
-        return sample_list_schema.dump(Sample.find_all(page)), HTTPStatus.OK
+        return (
+            sample_list_schema.dump(Sample.find_all(page, data_source_type)),
+            HTTPStatus.OK,
+        )
 
 
 class SampleResource(Resource):
