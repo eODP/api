@@ -9,6 +9,7 @@ from models.section import Section
 from models.site import Site
 from models.taxon import Taxon
 from models.sample_taxon import SampleTaxon
+from models.taxon_crosswalk import TaxonCrosswalk
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
@@ -455,10 +456,18 @@ def create_taxon(params):
     record.save()
 
 
+def create_taxon_crosswalk(params):
+    allowed_attributes = ["taxon_id", "original_name", "taxon_group"]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = TaxonCrosswalk(**attributes)
+    record.save()
+
+
 # TODO: might need to refactor after Leah finalizes the taxa names
-def find_taxon_by_verbatim_name(params):
+def find_taxon_by_name(params):
     return Taxon.query.filter_by(
-        verbatim_name=params["verbatim_name"], taxon_group=params["taxon_group"]
+        name=params["name"], taxon_group=params["taxon_group"]
     ).first()
 
 
@@ -513,9 +522,7 @@ def fetch_taxa_ids(taxon_group, taxa_columns):
     taxa_dict = {}
     for name in taxa_columns:
         # TODO: update find_taxon once Leah sends finalized taxa names
-        taxon = find_taxon_by_verbatim_name(
-            {"verbatim_name": name.strip(), "taxon_group": taxon_group}
-        )
+        taxon = find_taxon_by_name({"name": name.strip(), "taxon_group": taxon_group})
         taxa_dict[name] = taxon.id
 
     return taxa_dict

@@ -13,6 +13,9 @@ from resources.section import SectionListResource, SectionResource
 from resources.sample import SampleListResource, SampleResource
 from resources.taxon import TaxonListResource, TaxonResource
 
+# NOTE: import models in app.py so migrations will work
+from models.taxon_crosswalk import TaxonCrosswalk  # noqa: F401
+
 
 def create_app():
     if os.environ.get("ENV") == "Production":
