@@ -447,7 +447,6 @@ def create_sample(params):
 def create_taxon(params):
     allowed_attributes = [
         "name",
-        "verbatim_name",
         "taxon_group",
     ]
     attributes = allowed_params(allowed_attributes, params)
