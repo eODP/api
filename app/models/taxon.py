@@ -22,6 +22,10 @@ class Taxon(db.Model):
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
 
+    @classmethod
+    def find_by_name(cls, name, taxon_group):
+        return cls.query.filter_by(name=name, taxon_group=taxon_group).first()
+
     def save(self):
         db.session.add(self)
         db.session.commit()

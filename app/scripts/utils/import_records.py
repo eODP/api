@@ -28,7 +28,9 @@ def import_expedition_for_csv(csv_reader, filename):
 
 
 def find_expedition(params):
-    return Expedition.query.filter_by(name=params["name"]).first()
+    allowed_attributes = ["name"]
+    attributes = allowed_params(allowed_attributes, params)
+    return Expedition.find_by_name(**attributes)
 
 
 def create_expedition(params):
@@ -464,17 +466,23 @@ def create_taxon_crosswalk(params):
     record.save()
 
 
-# TODO: might need to refactor after Leah finalizes the taxa names
 def find_taxon_by_name(params):
-    return Taxon.query.filter_by(
-        name=params["name"], taxon_group=params["taxon_group"]
-    ).first()
+    allowed_attributes = ["name", "taxon_group"]
+    attributes = allowed_params(allowed_attributes, params)
+    return Taxon.find_by_name(**attributes)
+
+
+def find_taxon_crosswalk_by_name(params):
+    allowed_attributes = ["name", "taxon_group"]
+    attributes = allowed_params(allowed_attributes, params)
+    return TaxonCrosswalk.find_by_name(**attributes)
 
 
 def create_sample_taxon(params):
     allowed_attributes = [
         "sample_id",
         "taxon_id",
+        "original_taxon_id",
         "code",
         "data_source_notes",
     ]
@@ -490,7 +498,7 @@ def fetch_nontaxa_fields(nontaxa_csv):
     with open(nontaxa_csv, mode="r") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
-            nontaxa_fields.add(row["field"])
+            nontaxa_fields.add(row["original"])
 
     return nontaxa_fields
 
@@ -521,8 +529,10 @@ def fetch_taxa_columns(csv_reader, nontaxa_fields):
 def fetch_taxa_ids(taxon_group, taxa_columns):
     taxa_dict = {}
     for name in taxa_columns:
-        # TODO: update find_taxon once Leah sends finalized taxa names
-        taxon = find_taxon_by_name({"name": name.strip(), "taxon_group": taxon_group})
-        taxa_dict[name] = taxon.id
+        taxon = find_taxon_crosswalk_by_name({"name": name, "taxon_group": taxon_group})
+        if taxon is None:
+            continue
+
+        taxa_dict[name] = {"taxon_id": taxon.taxon_id, "original_taxon_id": taxon.id}
 
     return taxa_dict
