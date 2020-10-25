@@ -5,6 +5,8 @@ def allowed_params(attributes_list, params):
     def format_value(value):
         if isinstance(value, str) and re.search(r"^ *$", value):
             return None
+        elif isinstance(value, str):
+            return value.strip()
         else:
             return value
 

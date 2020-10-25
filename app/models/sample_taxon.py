@@ -10,6 +10,7 @@ class SampleTaxon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sample_id = db.Column(db.Integer, db.ForeignKey("samples.id"))
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
+    original_taxon_id = db.Column(db.Integer, db.ForeignKey("taxa_crosswalk.id"))
     code = db.Column(db.String)
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text, index=True)
