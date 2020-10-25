@@ -1,6 +1,6 @@
 # eODP API
 
-Flask app fot the eODP API.
+Flask app for the eODP API.
 
 ## Setup
 
