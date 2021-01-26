@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy.dialects.postgresql.json import JSONB
+
 from extension import db
 from models.pagination import paginate
 
@@ -22,6 +24,11 @@ class Taxon(db.Model):
     subspecies_name = db.Column(db.String, nullable=True)
     non_taxa_descriptor = db.Column(db.String, nullable=True)
     comments = db.Column(db.String, nullable=True)
+    pbdb_taxon_id = db.Column(db.Integer)
+    pbdb_taxon_name = db.Column(db.String)
+    pbdb_taxon_rank = db.Column(db.String)
+    pbdb_data = db.Column(JSONB)
+    pbdb_notes = db.Column(db.String)
 
     samples = db.relationship("SampleTaxon", back_populates="taxon")
 

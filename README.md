@@ -82,6 +82,9 @@ flask db migrate -m 'name of migration'
 
 # run migration
 flask db upgrade
+
+# undo migration
+flask db downgrade
 ```
 
 If flask command is not available, try:
