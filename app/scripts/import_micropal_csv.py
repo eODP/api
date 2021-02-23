@@ -155,6 +155,52 @@ class Import_Micropal_CSV(object):
                     }
                     create_sample(attributes)
 
+    def delete_records_for_csvs(self):
+        bad_csvs = ["363-U1482A-nannofossils.csv"]
+        tables = [
+            "samples_taxa",
+            "samples",
+            "sections",
+            "cores",
+            "holes",
+            "sites",
+            "expeditions",
+        ]
+        foreign_ids = [
+            "sample_id",
+            "section_id",
+            "core_id",
+            "hole_id",
+            "site_id",
+            "expedition_id",
+            None,
+        ]
+
+        for file in bad_csvs:
+            for index, table in enumerate(tables):
+                if not foreign_ids[index]:
+                    continue
+                if index > 0:
+                    child_table = tables[index - 1]
+                    child_id = foreign_ids[index - 1]
+
+                    update_sql = f"""
+                    UPDATE {table} SET data_source_notes = temp.data_source_notes
+                    FROM (
+                      SELECT {table}.id, {child_table}.data_source_notes
+                      FROM {table}
+                      JOIN {child_table} ON {child_table}.{child_id} = {table}.id
+                      WHERE {child_table}.data_source_notes != {table}.data_source_notes
+                      AND {table}.data_source_notes = '{file}'
+                    ) AS temp
+                    where temp.id = {table}.id ;
+                    """
+                    db.engine.execute(update_sql)
+
+                db.engine.execute(
+                    f"DELETE FROM {table} where data_source_notes = '{file}';"
+                )
+
 
 if __name__ == "__main__":
     fire.Fire(Import_Micropal_CSV)
