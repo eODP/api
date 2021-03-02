@@ -28,6 +28,8 @@ FILE_PATH = os.environ.get("RAW_DATA_PATH")
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_3/*.csv"))
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
+MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv")
 
 # ======================
 # create app

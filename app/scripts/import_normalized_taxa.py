@@ -29,13 +29,17 @@ FILE_PATH = os.environ.get("RAW_DATA_PATH")
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_3/*.csv"))
-TAXA_CSV = f"{FILE_PATH}/taxa/taxa_list_{TAXON_GROUP}.csv"
-TAXA_CROSSWALK_CSV = f"{FILE_PATH}/taxa/taxa_crosswalk_{TAXON_GROUP}.csv"
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
+
+DATE = "2021-03-01"
+TAXA_CSV = f"{FILE_PATH}/taxa/taxa_list_{TAXON_GROUP}_{DATE}.csv"
+TAXA_CROSSWALK_CSV = f"{FILE_PATH}/taxa/taxa_crosswalk_{TAXON_GROUP}_{DATE}.csv"
 NONTAXA_CSV = f"{FILE_PATH}/taxa/non_taxa_fields_normalized.csv"
 METADATA_CSVS = [
     f"{FILE_PATH}/metadata/Micropal_1_changes.csv",
     f"{FILE_PATH}/metadata/Micropal_2_changes.csv",
     f"{FILE_PATH}/metadata/Micropal_3_changes.csv",
+    f"{FILE_PATH}/metadata/Micropal_revised_changes.csv",
 ]
 
 # ======================
@@ -71,21 +75,41 @@ class Import_Normalized_Taxa(object):
         with open(TAXA_CSV, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                create_taxon({"name": row["name"], "taxon_group": row["taxon_group"]})
+                create_taxon(
+                    {
+                        "name": row["normalized_name"],
+                        "taxon_group": row["taxon_group"],
+                        "taxon_name_above_genus": row["Any taxon above genus"],
+                        "genus_modifier": row["genus modifier"],
+                        "genus_name": row["genus name"],
+                        "subgenera_modifier": row["subgenera modifier"],
+                        "subgenera_name": row["subgenera name"],
+                        "species_modifier": row["species modifier"],
+                        "species_name": row["species name"],
+                        "subspecies_modifier": row["subspecies modifier"],
+                        "subspecies_name": row["subspecies name"],
+                        "non_taxa_descriptor": row["non-taxa descriptor"],
+                        "comments": row["comments"],
+                    }
+                )
 
     def import_taxa_crosswalk(self):
         with open(TAXA_CROSSWALK_CSV, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 taxon = find_taxon_by_name(
-                    {"name": row["normalized_name"], "taxon_group": row["taxon_group"]}
+                    {
+                        "name": row["normalized_name"],
+                        "taxon_group": row["taxon_group"],
+                        "comments": row["comments"],
+                    }
                 )
 
                 create_taxon_crosswalk(
                     {
                         "taxon_id": taxon.id,
                         "taxon_group": row["taxon_group"],
-                        "original_name": row["name"],
+                        "original_name": row["verbatim_name"].strip(),
                     }
                 )
 
@@ -93,7 +117,6 @@ class Import_Normalized_Taxa(object):
         nontaxa_fields = fetch_nontaxa_fields(NONTAXA_CSV)
 
         for path in MICROPAL_CSVS:
-            # for path in [f"{FILE_PATH}/Micropal_CSV_3/342_nannofossils_U1411B_1.csv"]:
 
             filename = path.split("/")[-1]
             print(filename)

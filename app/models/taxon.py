@@ -11,6 +11,17 @@ class Taxon(db.Model):
     name = db.Column(db.String, nullable=False)
     taxon_group = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    taxon_name_above_genus = db.Column(db.String, nullable=True)
+    genus_modifier = db.Column(db.String, nullable=True)
+    genus_name = db.Column(db.String, nullable=True)
+    subgenera_modifier = db.Column(db.String, nullable=True)
+    subgenera_name = db.Column(db.String, nullable=True)
+    species_modifier = db.Column(db.String, nullable=True)
+    species_name = db.Column(db.String, nullable=True)
+    subspecies_modifier = db.Column(db.String, nullable=True)
+    subspecies_name = db.Column(db.String, nullable=True)
+    non_taxa_descriptor = db.Column(db.String, nullable=True)
+    comments = db.Column(db.String, nullable=True)
 
     samples = db.relationship("SampleTaxon", back_populates="taxon")
 
@@ -23,8 +34,10 @@ class Taxon(db.Model):
         return cls.query.filter_by(id=id).first()
 
     @classmethod
-    def find_by_name(cls, name, taxon_group):
-        return cls.query.filter_by(name=name, taxon_group=taxon_group).first()
+    def find_by_name(cls, name, taxon_group, comments):
+        return cls.query.filter_by(
+            name=name, taxon_group=taxon_group, comments=comments
+        ).first()
 
     def save(self):
         db.session.add(self)
