@@ -9,6 +9,7 @@ from models.hole import Hole
 from models.sample import Sample
 from models.section import Section
 from models.site import Site
+from models.taxon import Taxon
 
 
 class ExpeditionFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -57,3 +58,11 @@ class SampleFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = db.session
 
     name = f"sample {random.randint(1, 10000)}"
+
+
+class TaxonFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = Taxon
+        sqlalchemy_session = db.session
+
+    name = f"taxon {random.randint(1, 10000)}"

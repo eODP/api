@@ -14,7 +14,7 @@ if os.environ.get("ENV") == "Production":
 
 from extension import db, ma  # noqa: F402
 from models.taxon import Taxon  # noqa: F402
-from scripts.utils.pbdb_utils import clean_taxon_name  # noqa: F402
+from scripts.utils.pbdb_utils import format_taxon_name  # noqa: F402
 
 # NOTE: must import multiple unused models to make model relationships work
 from models.core import Core  # noqa: F401
@@ -28,7 +28,7 @@ from models.sample_taxon import SampleTaxon  # noqa: F401
 
 PBDB_API = "https://paleobiodb.org/data1.2/"
 PBDB_TAXA = f"{PBDB_API}taxa/single.json?vocab=pbdb&name="
-LOG = "./app/scripts/t/pbdb_taxa_errors.csv"
+LOG = "./app/scripts/tmp/pbdb_taxa_errors.csv"
 
 
 # ======================
@@ -93,9 +93,7 @@ def add_pbdb_data(taxon, keyword, notes):
             taxon.pbdb_data = data[0]
             taxon.pbdb_taxon_id = data[0]["taxon_no"]
             taxon.pbdb_taxon_name = data[0]["taxon_name"]
-            taxon.pbdb_accepted_name = data[0]["accepted_name"]
             taxon.pbdb_taxon_rank = data[0]["taxon_rank"]
-            taxon.pbdb_accepted_rank = data[0]["accepted_rank"]
             taxon.pbdb_notes = notes
             db.session.commit()
         else:
@@ -115,20 +113,19 @@ class PBDB_Taxa(object):
         taxa = Taxon.query.filter_by(taxon_group=taxon_group, pbdb_taxon_id=None)
 
         for taxon in taxa:
-            clean_name = clean_taxon_name(taxon.name)
-            add_pbdb_data(taxon, clean_name, "exact taxon match")
-            print(clean_name)
+            name = format_taxon_name(taxon)
+            add_pbdb_data(taxon, name, "exact taxon match")
+            print(taxon.name, ":", name)
 
     def genus_match(self):
         taxon_group = "nannofossils"
         taxa = Taxon.query.filter_by(taxon_group=taxon_group, pbdb_taxon_id=None)
 
         for taxon in taxa:
-            clean_name = clean_taxon_name(taxon.name)
-            parts = clean_name.split(" ")
-            if len(parts) > 1:
-                add_pbdb_data(taxon, parts[0], "genus match")
-                print(parts[0])
+            if taxon.genus_name:
+                name = taxon.genus_name
+                add_pbdb_data(taxon, name, "genus match")
+                print(taxon.name, ":", name)
 
 
 if __name__ == "__main__":
