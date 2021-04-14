@@ -10,6 +10,7 @@ class TaxonCrosswalk(db.Model):
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
     original_name = db.Column(db.String, nullable=False)
     taxon_group = db.Column(db.String, nullable=False)
+    comments = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     @classmethod

@@ -23,7 +23,6 @@ class Taxon(db.Model):
     subspecies_modifier = db.Column(db.String, nullable=True)
     subspecies_name = db.Column(db.String, nullable=True)
     non_taxa_descriptor = db.Column(db.String, nullable=True)
-    comments = db.Column(db.String, nullable=True)
     pbdb_taxon_id = db.Column(db.Integer)
     pbdb_taxon_name = db.Column(db.String)
     pbdb_taxon_rank = db.Column(db.String)
@@ -41,10 +40,8 @@ class Taxon(db.Model):
         return cls.query.filter_by(id=id).first()
 
     @classmethod
-    def find_by_name(cls, name, taxon_group, comments):
-        return cls.query.filter_by(
-            name=name, taxon_group=taxon_group, comments=comments
-        ).first()
+    def find_by_name(cls, name, taxon_group):
+        return cls.query.filter_by(name=name, taxon_group=taxon_group).first()
 
     def save(self):
         db.session.add(self)

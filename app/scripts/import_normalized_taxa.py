@@ -89,7 +89,6 @@ class Import_Normalized_Taxa(object):
                         "subspecies_modifier": row["subspecies modifier"],
                         "subspecies_name": row["subspecies name"],
                         "non_taxa_descriptor": row["non-taxa descriptor"],
-                        "comments": row["comments"],
                     }
                 )
 
@@ -98,11 +97,7 @@ class Import_Normalized_Taxa(object):
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 taxon = find_taxon_by_name(
-                    {
-                        "name": row["normalized_name"],
-                        "taxon_group": row["taxon_group"],
-                        "comments": row["comments"],
-                    }
+                    {"name": row["normalized_name"], "taxon_group": row["taxon_group"]}
                 )
 
                 create_taxon_crosswalk(
@@ -110,6 +105,7 @@ class Import_Normalized_Taxa(object):
                         "taxon_id": taxon.id,
                         "taxon_group": row["taxon_group"],
                         "original_name": row["verbatim_name"].strip(),
+                        "comments": row["comments"],
                     }
                 )
 

@@ -461,7 +461,6 @@ def create_taxon(params):
         "subspecies_modifier",
         "subspecies_name",
         "non_taxa_descriptor",
-        "comments",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -470,7 +469,7 @@ def create_taxon(params):
 
 
 def create_taxon_crosswalk(params):
-    allowed_attributes = ["taxon_id", "original_name", "taxon_group"]
+    allowed_attributes = ["taxon_id", "original_name", "taxon_group", "comments"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = TaxonCrosswalk(**attributes)
@@ -478,7 +477,7 @@ def create_taxon_crosswalk(params):
 
 
 def find_taxon_by_name(params):
-    allowed_attributes = ["name", "taxon_group", "comments"]
+    allowed_attributes = ["name", "taxon_group"]
     attributes = allowed_params(allowed_attributes, params)
     return Taxon.find_by_name(**attributes)
 
