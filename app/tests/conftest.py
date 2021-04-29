@@ -1,6 +1,13 @@
 import os
+import sys
 
 import pytest
+from dotenv import load_dotenv
+
+load_dotenv(".env", verbose=True)
+path = os.environ.get("PASSENGER_BASE_PATH")
+sys.path.append(path)
+
 
 from extension import db
 from app import create_app

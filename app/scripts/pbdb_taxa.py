@@ -8,9 +8,8 @@ import fire
 from dotenv import load_dotenv
 
 load_dotenv(".env", verbose=True)
-if os.environ.get("ENV") == "Production":
-    path = os.environ.get("PASSENGER_BASE_PATH")
-    sys.path.append(path)
+path = os.environ.get("PASSENGER_BASE_PATH")
+sys.path.append(path)
 
 from extension import db, ma  # noqa: F402
 from models.taxon import Taxon  # noqa: F402
