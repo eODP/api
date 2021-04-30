@@ -14,6 +14,7 @@ class Expedition(db.Model):
     data_source_notes = db.Column(db.Text)
     workbook_tab_name = db.Column(db.String)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    dataset = db.Column(db.String, index=True)
 
     sites = db.relationship(Site, lazy="dynamic")
 

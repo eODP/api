@@ -26,6 +26,8 @@ class Core(db.Model):
     data_source_url = db.Column(db.String)
     data_source_notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    dataset = db.Column(db.String, index=True)
+
 
     hole = db.relationship("Hole")
     sections = db.relationship(Section, lazy="dynamic")
