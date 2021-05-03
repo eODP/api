@@ -28,7 +28,10 @@ MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_3/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
-MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv")
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
+
+datasets = ["NOAA", "Janus", "LIMS"]
+DATASET = datasets[2]
 
 # ======================
 # create app
@@ -64,28 +67,28 @@ class Import_Micropal_CSV(object):
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_expedition_for_csv(csv_reader, filename)
+                import_expedition_for_csv(csv_reader, filename, DATASET)
 
     def import_sites(self):
         for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_sites_for_csv(csv_reader, filename)
+                import_sites_for_csv(csv_reader, filename, DATASET)
 
     def import_holes(self):
         for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_holes_for_csv(csv_reader, filename)
+                import_holes_for_csv(csv_reader, filename, DATASET)
 
     def import_cores(self):
         for path in MICROPAL_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_cores_for_csv(csv_reader, filename)
+                import_cores_for_csv(csv_reader, filename, DATASET)
 
     def import_sections(self):
         for path in MICROPAL_CSVS:
@@ -94,7 +97,7 @@ class Import_Micropal_CSV(object):
 
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_sections_for_csv(csv_reader, filename)
+                import_sections_for_csv(csv_reader, filename, DATASET)
 
     def import_samples(self):
         for path in MICROPAL_CSVS:
@@ -153,6 +156,7 @@ class Import_Micropal_CSV(object):
                         "raw_data": row,
                         "data_source_notes": filename,
                         "data_source_type": "micropal csv",
+                        "dataset": DATASET,
                     }
                     create_sample(attributes)
 

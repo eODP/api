@@ -13,7 +13,7 @@ from models.taxon_crosswalk import TaxonCrosswalk
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
-def import_expedition_for_csv(csv_reader, filename):
+def import_expedition_for_csv(csv_reader, filename, dataset):
     unique_values = set()
     for row in csv_reader:
         if row["Exp"] == "":
@@ -24,7 +24,7 @@ def import_expedition_for_csv(csv_reader, filename):
     for exp_name in unique_values:
         expedition = find_expedition({"name": exp_name})
         if not expedition:
-            create_expedition({"name": exp_name})
+            create_expedition({"name": exp_name, "dataset": dataset})
 
 
 def find_expedition(params):
@@ -34,14 +34,14 @@ def find_expedition(params):
 
 
 def create_expedition(params):
-    allowed_attributes = ["name", "workbook_tab_name", "data_source_notes"]
+    allowed_attributes = ["name", "workbook_tab_name", "data_source_notes", "dataset"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Expedition(**attributes)
     record.save()
 
 
-def import_sites_for_csv(csv_reader, filename):
+def import_sites_for_csv(csv_reader, filename, dataset):
     unique_values = set()
     for row in csv_reader:
         if row["Exp"] == "":
@@ -62,6 +62,7 @@ def import_sites_for_csv(csv_reader, filename):
                         "name": site_name,
                         "expedition_id": expedition.id,
                         "data_source_notes": filename,
+                        "dataset": dataset,
                     }
                 )
 
@@ -84,14 +85,14 @@ def find_site(params):
 
 
 def create_site(params):
-    allowed_attributes = ["name", "expedition_id", "data_source_notes"]
+    allowed_attributes = ["name", "expedition_id", "data_source_notes", "dataset"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Site(**attributes)
     record.save()
 
 
-def import_holes_for_csv(csv_reader, filename):
+def import_holes_for_csv(csv_reader, filename, dataset):
     unique_values = set()
     for row in csv_reader:
         if row["Exp"] == "":
@@ -114,6 +115,7 @@ def import_holes_for_csv(csv_reader, filename):
                         "name": hole_name,
                         "site_id": site["id"],
                         "data_source_notes": filename,
+                        "dataset": dataset,
                     }
                 )
 
@@ -138,14 +140,14 @@ def find_hole(params):
 
 
 def create_hole(params):
-    allowed_attributes = ["name", "site_id", "data_source_notes"]
+    allowed_attributes = ["name", "site_id", "data_source_notes", "dataset"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Hole(**attributes)
     record.save()
 
 
-def import_cores_for_csv(csv_reader, filename):
+def import_cores_for_csv(csv_reader, filename, dataset):
     unique_values = set()
     for row in csv_reader:
         if row["Exp"] == "":
@@ -179,6 +181,7 @@ def import_cores_for_csv(csv_reader, filename):
                         "type": core_type,
                         "hole_id": hole["id"],
                         "data_source_notes": filename,
+                        "dataset": dataset,
                     }
                 )
 
@@ -212,14 +215,14 @@ def find_core(params):
 
 
 def create_core(params):
-    allowed_attributes = ["name", "type", "hole_id", "data_source_notes"]
+    allowed_attributes = ["name", "type", "hole_id", "data_source_notes", "dataset"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Core(**attributes)
     record.save()
 
 
-def import_sections_for_csv(csv_reader, filename):
+def import_sections_for_csv(csv_reader, filename, dataset):
     unique_values = set()
     for row in csv_reader:
         if row["Exp"] == "":
@@ -270,6 +273,7 @@ def import_sections_for_csv(csv_reader, filename):
                         "core_id": core["id"],
                         "aw": aw,
                         "data_source_notes": filename,
+                        "dataset": dataset,
                     }
                 )
 
@@ -308,7 +312,7 @@ def find_section(params):
 
 
 def create_section(params):
-    allowed_attributes = ["name", "core_id", "aw", "data_source_notes"]
+    allowed_attributes = ["name", "core_id", "aw", "data_source_notes", "dataset"]
     attributes = allowed_params(allowed_attributes, params)
 
     record = Section(**attributes)
@@ -440,6 +444,7 @@ def create_sample(params):
         "raw_data",
         "data_source_notes",
         "data_source_type",
+        "dataset",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -495,6 +500,7 @@ def create_sample_taxon(params):
         "original_taxon_id",
         "code",
         "data_source_notes",
+        "dataset",
     ]
     attributes = allowed_params(allowed_attributes, params)
 

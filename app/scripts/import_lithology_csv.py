@@ -26,6 +26,9 @@ from scripts.utils.import_records import (  # noqa: F402
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
 LITHOLOGY_CSVS = glob.glob(f"{FILE_PATH}/Lithology_CSV/*.csv")
 
+datasets = ["NOAA", "Janus", "LIMS"]
+DATASET = datasets[2]
+
 # ======================
 # create app
 # ======================
@@ -61,6 +64,7 @@ class Import_Lithology_CSV(object):
         with open(file, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
+                row["dataset"] = DATASET
                 create_expedition(row)
 
     def import_sites(self):
@@ -68,21 +72,21 @@ class Import_Lithology_CSV(object):
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_sites_for_csv(csv_reader, filename)
+                import_sites_for_csv(csv_reader, filename, DATASET)
 
     def import_holes(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_holes_for_csv(csv_reader, filename)
+                import_holes_for_csv(csv_reader, filename, DATASET)
 
     def import_cores(self):
         for path in LITHOLOGY_CSVS:
             filename = path.split("/")[-1]
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_cores_for_csv(csv_reader, filename)
+                import_cores_for_csv(csv_reader, filename, DATASET)
 
     def import_sections(self):
         for path in LITHOLOGY_CSVS:
@@ -91,7 +95,7 @@ class Import_Lithology_CSV(object):
 
             with open(path, mode="r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                import_sections_for_csv(csv_reader, filename)
+                import_sections_for_csv(csv_reader, filename, DATASET)
 
     def import_samples(self):
         for path in LITHOLOGY_CSVS:
@@ -161,6 +165,7 @@ class Import_Lithology_CSV(object):
                         "raw_data": row,
                         "data_source_notes": filename,
                         "data_source_type": "lithology csv",
+                        "dataset": DATASET,
                     }
                     create_sample(attributes)
 

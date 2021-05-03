@@ -28,7 +28,6 @@ class Core(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     dataset = db.Column(db.String, index=True)
 
-
     hole = db.relationship("Hole")
     sections = db.relationship(Section, lazy="dynamic")
 
