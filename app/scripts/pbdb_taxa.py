@@ -108,17 +108,24 @@ def add_pbdb_data(taxon, keyword, notes):
 
 class PBDB_Taxa(object):
     def exact_taxon_match(self):
-        taxon_group = "nannofossils"
-        taxa = Taxon.query.filter_by(taxon_group=taxon_group, pbdb_taxon_id=None)
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
 
         for taxon in taxa:
             name = format_taxon_name(taxon)
             add_pbdb_data(taxon, name, "exact taxon match")
             print(taxon.name, ":", name)
 
+    def species_match(self):
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
+
+        for taxon in taxa:
+            if taxon.subspecies_name:
+                name = f"{taxon.genus_name} {taxon.species_name}"
+                add_pbdb_data(taxon, name, "species match")
+                print(taxon.name, ":", name)
+
     def genus_match(self):
-        taxon_group = "nannofossils"
-        taxa = Taxon.query.filter_by(taxon_group=taxon_group, pbdb_taxon_id=None)
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
 
         for taxon in taxa:
             if taxon.genus_name:
