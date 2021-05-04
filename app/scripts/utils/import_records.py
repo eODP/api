@@ -474,7 +474,14 @@ def create_taxon(params):
 
 
 def create_taxon_crosswalk(params):
-    allowed_attributes = ["taxon_id", "original_name", "taxon_group", "comments"]
+    allowed_attributes = [
+        "taxon_id",
+        "original_name",
+        "taxon_group",
+        "comments",
+        "processing_notes",
+        "initial_comments",
+    ]
     attributes = allowed_params(allowed_attributes, params)
 
     record = TaxonCrosswalk(**attributes)

@@ -12,6 +12,8 @@ class TaxonCrosswalk(db.Model):
     taxon_group = db.Column(db.String, nullable=False)
     comments = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    initial_comments = db.Column(db.String, nullable=True)
+    processing_notes = db.Column(db.String, nullable=True)
 
     @classmethod
     def find_by_name(cls, name, taxon_group):
