@@ -20,30 +20,30 @@ class TestFormatTaxonName:
         taxon = TaxonFactory(genus_name="genus", species_name="species")
         assert format_taxon_name(taxon) == "genus species"
 
-    def test_returns_genus_species_modifier(self, client):
+    def test_returns_genus_ignores_species_modifier(self, client):
         taxon = TaxonFactory(genus_name="genus", species_modifier="sm")
-        assert format_taxon_name(taxon) == "genus sm"
+        assert format_taxon_name(taxon) == "genus"
 
-    def test_returns_genus_species_modifier_species(self, client):
+    def test_returns_genus_species_ignores_species_modifier(self, client):
         taxon = TaxonFactory(
             genus_name="genus", species_name="species", species_modifier="sm"
         )
-        assert format_taxon_name(taxon) == "genus sm species"
+        assert format_taxon_name(taxon) == "genus species"
 
-    def test_returns_genus_species_subspecies_modifier(self, client):
+    def test_returns_genus_species_ignores_subsp_modifier(self, client):
         taxon = TaxonFactory(
             genus_name="genus", species_name="species", subspecies_modifier="sm"
         )
-        assert format_taxon_name(taxon) == "genus species sm"
+        assert format_taxon_name(taxon) == "genus species"
 
-    def test_returns_genus_species_subspecies_modifier_subspecies(self, client):
+    def test_returns_genus_species_subsp_ignores_subsp_modifier(self, client):
         taxon = TaxonFactory(
             genus_name="genus",
             species_name="species",
             subspecies_modifier="sm",
             subspecies_name="subspecies",
         )
-        assert format_taxon_name(taxon) == "genus species sm subspecies"
+        assert format_taxon_name(taxon) == "genus species subspecies"
 
     def test_returns_genus_species_subspecies(self, client):
         taxon = TaxonFactory(

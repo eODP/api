@@ -36,6 +36,13 @@ class TestAllowedAttribute:
 
         assert allowed_params(allowed_list, params) == params
 
+    def test_strips_leading_and_trailing_spaces(self):
+        allowed_list = ["a", "b", "c"]
+        params = {"a": "  aa", "b": "bb  ", "c": "  cc  "}
+        expected = {"a": "aa", "b": "bb", "c": "cc"}
+
+        assert allowed_params(allowed_list, params) == expected
+
 
 class TestTrimDocString:
     def test_removes_line_breaks_and_excessive_spaces(self):
