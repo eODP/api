@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from extension import db
+from models.taxon import Taxon
 
 
 class TaxonCrosswalk(db.Model):
@@ -18,6 +19,16 @@ class TaxonCrosswalk(db.Model):
     @classmethod
     def find_by_name(cls, name, taxon_group):
         return cls.query.filter_by(original_name=name, taxon_group=taxon_group).first()
+
+    @classmethod
+    def find_by_name_and_taxon(cls, crosswalk_name, taxon_name, taxon_group):
+        return (
+            cls.query.join(Taxon)
+            .filter(Taxon.name == taxon_name)
+            .filter(cls.original_name == crosswalk_name)
+            .filter(cls.taxon_group == taxon_group)
+            .first()
+        )
 
     def save(self):
         db.session.add(self)

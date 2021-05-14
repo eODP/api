@@ -500,6 +500,12 @@ def find_taxon_crosswalk_by_name(params):
     return TaxonCrosswalk.find_by_name(**attributes)
 
 
+def find_taxon_crosswalk_by_name_and_taxon(params):
+    allowed_attributes = ["crosswalk_name", "taxon_name", "taxon_group"]
+    attributes = allowed_params(allowed_attributes, params)
+    return TaxonCrosswalk.find_by_name_and_taxon(**attributes)
+
+
 def create_sample_taxon(params):
     allowed_attributes = [
         "sample_id",
