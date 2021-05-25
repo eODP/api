@@ -36,6 +36,7 @@ taxon_groups = [
     "radiolarians",
     "dinoflagellates",
     "palynology",
+    "benthic_forams",
 ]
 
 FILE_PATH = os.environ.get("RAW_DATA_PATH")
@@ -44,14 +45,8 @@ MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_3/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
 
-DATE = "2021-05-13"
+DATE = "2021-05-24"
 NONTAXA_CSV = f"{FILE_PATH}/taxa/non_taxa_fields_normalized.csv"
-METADATA_CSVS = [
-    f"{FILE_PATH}/metadata/Micropal_1_changes.csv",
-    f"{FILE_PATH}/metadata/Micropal_2_changes.csv",
-    f"{FILE_PATH}/metadata/Micropal_3_changes.csv",
-    f"{FILE_PATH}/metadata/Micropal_revised_changes.csv",
-]
 
 datasets = ["NOAA", "Janus", "LIMS"]
 DATASET = datasets[2]
@@ -155,7 +150,6 @@ class Import_Normalized_Taxa(object):
                             "original_name": row["verbatim_name"],
                             "comments": row["comments"],
                             "initial_comments": row["initial_comments"],
-                            "processing_notes": row["processing_notes"],
                         }
                     )
 

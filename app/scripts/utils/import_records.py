@@ -558,7 +558,9 @@ def fetch_taxa_columns(csv_reader, nontaxa_fields):
 def fetch_taxa_ids(taxon_group, taxa_columns):
     taxa_dict = {}
     for name in taxa_columns:
-        taxon = find_taxon_crosswalk_by_name({"name": name, "taxon_group": taxon_group})
+        taxon = find_taxon_crosswalk_by_name(
+            {"name": name.strip(), "taxon_group": taxon_group}
+        )
         if taxon is None:
             continue
 
