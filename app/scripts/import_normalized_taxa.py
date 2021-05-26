@@ -156,24 +156,24 @@ class Import_Normalized_Taxa(object):
     def import_sample_taxa(self):
         nontaxa_fields = fetch_nontaxa_fields(NONTAXA_CSV)
 
-        for path in MICROPAL_CSVS:
-
+        # for path in MICROPAL_CSVS:
+        for path in [f"{FILE_PATH}/tmp/363-U1482A-planktic_forams.csv"]:
             filename = path.split("/")[-1]
             print(filename)
-            taxon_group = TAXON_GROUP
 
             with open(path, mode="r", encoding="utf-8-sig") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 taxa_columns = fetch_taxa_columns(csv_reader, nontaxa_fields)
 
-            with open(path, mode="r", encoding="utf-8-sig") as csv_file:
-                csv_reader = csv.DictReader(csv_file)
+            for taxon_group in ["planktic_forams"]:
+                with open(path, mode="r", encoding="utf-8-sig") as csv_file:
+                    csv_reader = csv.DictReader(csv_file)
 
-                taxa_ids = fetch_taxa_ids(taxon_group, taxa_columns)
-                if bool(taxa_ids):
-                    self._import_sample_taxa_for_csv(
-                        csv_reader, filename, taxon_group, taxa_ids
-                    )
+                    taxa_ids = fetch_taxa_ids(taxon_group, taxa_columns)
+                    if bool(taxa_ids):
+                        self._import_sample_taxa_for_csv(
+                            csv_reader, filename, taxon_group, taxa_ids
+                        )
 
     def _import_sample_taxa_for_csv(self, csv_reader, filename, taxon_group, taxa_ids):
         for row in csv_reader:
@@ -213,6 +213,7 @@ class Import_Normalized_Taxa(object):
                                 "sample_id": sample_id,
                                 "code": taxon_code,
                                 "data_source_notes": filename,
+                                "dataset": DATASET,
                             }
                         )
 
