@@ -67,8 +67,12 @@ def handle_not_found_error(response, taxon_name):
             taxon_name,
             data["status_code"],
             data["errors"][0],
-            data["warnings"][0],
         ]
+        if "warnings" in data:
+            fields.append(data["warnings"][0])
+        else:
+            fields.append("")
+
         csvwriter.writerow(fields)
 
 
@@ -108,7 +112,7 @@ def add_pbdb_data(taxon, keyword, notes):
 
 class PBDB_Taxa(object):
     def exact_taxon_match(self):
-        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None).order_by("id")
 
         for taxon in taxa:
             name = format_taxon_name(taxon)
@@ -116,7 +120,7 @@ class PBDB_Taxa(object):
             print(taxon.name, ":", name)
 
     def species_match(self):
-        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None).order_by("id")
 
         for taxon in taxa:
             if taxon.subspecies_name:
@@ -125,7 +129,7 @@ class PBDB_Taxa(object):
                 print(taxon.name, ":", name)
 
     def genus_match(self):
-        taxa = Taxon.query.filter_by(pbdb_taxon_id=None)
+        taxa = Taxon.query.filter_by(pbdb_taxon_id=None).order_by("id")
 
         for taxon in taxa:
             if taxon.genus_name:
