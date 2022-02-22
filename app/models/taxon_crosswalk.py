@@ -16,29 +16,6 @@ class TaxonCrosswalk(db.Model):
     initial_comments = db.Column(db.String, nullable=True)
     processing_notes = db.Column(db.String, nullable=True)
 
-    # db.session.query(Taxon, cls).filter(Taxon.name == 'Neogloboquadrina acostaensis (dextral)').filter(cls.original_name==name).filter(cls.taxon_group==taxon_group)
-
-    # cls.query(Taxon).filter_by(Taxon.name == 'Neogloboquadrina acostaensis (dextral)')
-
-    # .filter(cls.original_name==name).filter(cls.taxon_group==taxon_group)
-
-    #     # taxa = db.relationship(Taxon, lazy="dynamic")
-    #  cls.query.join(Taxon).filter(Taxon.name == 'Neogloboquadrina acostaensis (dextral)').filter(cls.original_name==name).filter(cls.taxon_group==taxon_group)
-
-    #  filter_by(original_name=name, taxon_group=taxon_group).join(Taxon).filter_by(Taxon.taxon_group='planktic_forams').first()
-
-    # cls.query(Taxon)
-    # Session.query(
-    #          Taxon, Document, DocumentPermissions,
-    #     ).filter(
-    #          User.email == Document.author,
-    #     ).filter(
-    #          Document.name == DocumentPermissions.document,
-    #     ).filter(
-    #         User.email == 'someemail',
-    #     ).all()
-
-    # cls.query.join(Taxon).filter_by(cls.original_name=name, cls.taxon_group=taxon_group).first()
     @classmethod
     def find_by_name(cls, name, taxon_group):
         return cls.query.filter_by(original_name=name, taxon_group=taxon_group).first()
