@@ -466,6 +466,10 @@ def create_taxon(params):
         "subspecies_modifier",
         "subspecies_name",
         "non_taxa_descriptor",
+        "pbdb_taxon_id",
+        "pbdb_taxon_name",
+        "pbdb_taxon_rank",
+        "pbdb_data"
     ]
     attributes = allowed_params(allowed_attributes, params)
 

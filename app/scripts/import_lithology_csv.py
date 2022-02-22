@@ -23,7 +23,7 @@ from scripts.utils.import_records import (  # noqa: F402
     create_sample,
 )
 
-FILE_PATH = os.environ.get("RAW_DATA_PATH")
+FILE_PATH = os.environ.get("CLEANED_DATA_PATH")
 LITHOLOGY_CSVS = glob.glob(f"{FILE_PATH}/Lithology_CSV/*.csv")
 
 datasets = ["NOAA", "Janus", "LIMS"]

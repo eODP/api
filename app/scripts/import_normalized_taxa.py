@@ -23,6 +23,7 @@ from scripts.utils.import_records import (  # noqa: F402
     fetch_taxa_ids,
     fetch_nontaxa_fields,
 )
+from scripts.utils.pbdb_utils import format_pbdb_data_for_row
 
 taxon_groups = [
     "nannofossils",
@@ -39,13 +40,16 @@ taxon_groups = [
     "benthic_forams",
 ]
 
-FILE_PATH = os.environ.get("RAW_DATA_PATH")
-MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/Micropal_CSV_1/*.csv")
-MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_2/*.csv"))
-MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_3/*.csv"))
-MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/Micropal_CSV_revised/*.csv"))
+FILE_PATH = os.environ.get("CLEANED_DATA_PATH")
+OUTPUT_PATH = os.environ.get("OUTPUT_PATH")
 
-DATE = "2021-05-24"
+MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_1/*.csv")
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_2/*.csv"))
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_3/*.csv"))
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
+
+
+DATE = "2022-02-22"
 NONTAXA_CSV = f"{FILE_PATH}/taxa/non_taxa_fields_normalized.csv"
 
 datasets = ["NOAA", "Janus", "LIMS"]
@@ -81,10 +85,8 @@ class Import_Normalized_Taxa(object):
         db.engine.execute(f"TRUNCATE {table} RESTART IDENTITY CASCADE;")
 
     def import_taxa(self):
-        for taxon_group in taxon_groups:
-            print(taxon_group)
-            path = f"{FILE_PATH}/taxa/taxa_list_{taxon_group}_{DATE}.csv"
-            self._import_taxa_file(path)
+        path = f"{OUTPUT_PATH}/taxa/LIMS/taxa_list_{DATE}.csv"
+        self._import_taxa_file(path)
 
     def _import_taxa_file(self, path):
         with open(path, mode="r") as csv_file:
@@ -112,15 +114,16 @@ class Import_Normalized_Taxa(object):
                             "subspecies_modifier": row["subspecies modifier"],
                             "subspecies_name": row["subspecies name"],
                             "non_taxa_descriptor": row["non-taxa descriptor"],
+                            "pbdb_data": format_pbdb_data_for_row(row),
+                            "pbdb_taxon_id": row['pbdb_taxon_id'],
+                            "pbdb_taxon_name": row['pbdb_taxon_name'],
+                            "pbdb_taxon_rank": row['pbdb_taxon_rank']
                         }
                     )
 
     def import_taxa_crosswalk(self):
-        for taxon_group in taxon_groups:
-            print(taxon_group)
-            path = f"{FILE_PATH}/taxa/taxa_crosswalk_{taxon_group}_{DATE}.csv"
-            # path = f"{FILE_PATH}/tmp/taxa_crosswalk_planktic_forams_foo.csv"
-            self._import_taxa_crosswalk_file(path)
+        path = f"{FILE_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"
+        self._import_taxa_crosswalk_file(path)
 
     def _import_taxa_crosswalk_file(self, path="foo"):
         with open(path, mode="r") as csv_file:
