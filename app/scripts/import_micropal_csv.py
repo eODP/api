@@ -19,7 +19,7 @@ from scripts.utils.import_records import (  # noqa: F402
     import_cores_for_csv,
     import_sections_for_csv,
     find_section,
-    find_sample,
+    find_sample_by_eodp_id,
     create_sample,
 )
 
@@ -114,22 +114,9 @@ class Import_Micropal_CSV(object):
             if row["Exp"] == "":
                 continue
 
-            sample = find_sample(
+            sample = find_sample_by_eodp_id(
                 {
-                    "exp_name": row["Exp"],
-                    "site_name": row["Site"],
-                    "hole_name": row["Hole"],
-                    "core_name": row["Core"],
-                    "core_type": row["Type"],
-                    "section_name": row["Section"],
-                    "section_aw": row["A/W"],
-                    "sample_name": row["Sample"],
-                    "top": row["Top [cm]"],
-                    "bottom": row["Bottom [cm]"],
-                    "top_depth": row["Top Depth [m]"],
-                    "bottom_depth": row["Bottom Depth [m]"],
-                    "data_source_notes": filename,
-                    "data_source_type": "micropal csv",
+                    "eodp_id": row['eodp_id']
                 }
             )
             if not sample.first():
@@ -157,6 +144,8 @@ class Import_Micropal_CSV(object):
                         "data_source_notes": filename,
                         "data_source_type": "micropal csv",
                         "dataset": DATASET,
+                        "eodp_id": row['eodp_id']
+
                     }
                     create_sample(attributes)
 

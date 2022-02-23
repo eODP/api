@@ -13,7 +13,7 @@ sys.path.append(path)
 
 from extension import db, ma  # noqa: F402
 from scripts.utils.import_records import (  # noqa: F402
-    find_sample,
+    find_sample_by_eodp_id,
     find_taxon_by_name,
     find_taxon_crosswalk_by_name_and_taxon,
     create_taxon,
@@ -183,22 +183,9 @@ class Import_Normalized_Taxa(object):
             if row["Exp"] == "":
                 continue
 
-            sample = find_sample(
+            sample = find_sample_by_eodp_id(
                 {
-                    "exp_name": row["Exp"],
-                    "site_name": row["Site"],
-                    "hole_name": row["Hole"],
-                    "core_name": row["Core"],
-                    "core_type": row["Type"],
-                    "section_name": row["Section"],
-                    "section_aw": row["A/W"],
-                    "sample_name": row["Sample"],
-                    "top": row["Top [cm]"],
-                    "bottom": row["Bottom [cm]"],
-                    "top_depth": row["Top Depth [m]"],
-                    "bottom_depth": row["Bottom Depth [m]"],
-                    "data_source_notes": filename,
-                    "data_source_type": "micropal csv",
+                    "eodp_id": row['eodp_id']
                 }
             )
 

@@ -318,6 +318,13 @@ def create_section(params):
     record = Section(**attributes)
     record.save()
 
+def find_sample_by_eodp_id(params):
+    allowed_attributes = ["eodp_id"]
+    attributes = allowed_params(allowed_attributes, params)
+    return Sample.find_by_eodp_id(**attributes)
+
+    attributes = allowed_params(allowed_attributes, params)
+
 
 def find_sample(params):
     sql = trim_doc_string(
@@ -445,6 +452,7 @@ def create_sample(params):
         "data_source_notes",
         "data_source_type",
         "dataset",
+        "eodp_id",
     ]
     attributes = allowed_params(allowed_attributes, params)
 

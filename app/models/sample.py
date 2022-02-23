@@ -32,6 +32,7 @@ class Sample(db.Model):
     data_source_type = db.Column(db.String)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     dataset = db.Column(db.String, index=True)
+    eodp_id = db.Column(db.String)
 
     section = db.relationship("Section")
     taxa = db.relationship("SampleTaxon", back_populates="sample")
@@ -49,6 +50,10 @@ class Sample(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
+
+    @classmethod
+    def find_by_eodp_id(cls, eodp_id):
+        return cls.query.filter_by(eodp_id=eodp_id).first()
 
     def save(self):
         db.session.add(self)
