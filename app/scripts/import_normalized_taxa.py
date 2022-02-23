@@ -100,26 +100,28 @@ class Import_Normalized_Taxa(object):
                 )
 
                 if taxon is None:
-                    create_taxon(
-                        {
-                            "name": row["normalized_name"],
-                            "taxon_group": row["taxon_group"],
-                            "taxon_name_above_genus": row["Any taxon above genus"],
-                            "genus_modifier": row["genus modifier"],
-                            "genus_name": row["genus name"],
-                            "subgenera_modifier": row["subgenera modifier"],
-                            "subgenera_name": row["subgenera name"],
-                            "species_modifier": row["species modifier"],
-                            "species_name": row["species name"],
-                            "subspecies_modifier": row["subspecies modifier"],
-                            "subspecies_name": row["subspecies name"],
-                            "non_taxa_descriptor": row["non-taxa descriptor"],
-                            "pbdb_data": format_pbdb_data_for_row(row),
-                            "pbdb_taxon_id": row['pbdb_taxon_id'],
-                            "pbdb_taxon_name": row['pbdb_taxon_name'],
-                            "pbdb_taxon_rank": row['pbdb_taxon_rank']
-                        }
-                    )
+                    data = {
+                        "name": row["normalized_name"],
+                        "taxon_group": row["taxon_group"],
+                        "taxon_name_above_genus": row["Any taxon above genus"],
+                        "genus_modifier": row["genus modifier"],
+                        "genus_name": row["genus name"],
+                        "subgenera_modifier": row["subgenera modifier"],
+                        "subgenera_name": row["subgenera name"],
+                        "species_modifier": row["species modifier"],
+                        "species_name": row["species name"],
+                        "subspecies_modifier": row["subspecies modifier"],
+                        "subspecies_name": row["subspecies name"],
+                        "non_taxa_descriptor": row["non-taxa descriptor"],
+                        "pbdb_taxon_id": row['pbdb_taxon_id'],
+                        "pbdb_taxon_name": row['pbdb_taxon_name'],
+                        "pbdb_taxon_rank": row['pbdb_taxon_rank']
+                    }
+                    pbdb_data = format_pbdb_data_for_row(row)
+                    if pbdb_data:
+                        data['pbdb_data'] = pbdb_data
+
+                    create_taxon(data)
 
     def import_taxa_crosswalk(self):
         path = f"{FILE_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"

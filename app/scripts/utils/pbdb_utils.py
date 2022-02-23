@@ -11,6 +11,9 @@ def format_taxon_name(taxon):
 
 
 def format_pbdb_data_for_row(row):
+    if not row['pbdb_taxon_id']:
+        return
+
     data = {}
     fields = [
         "genus_taxon_id",
