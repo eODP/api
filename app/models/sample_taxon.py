@@ -1,5 +1,4 @@
 from datetime import datetime
-from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError
 
 from extension import db
 from models.pagination import paginate
@@ -26,16 +25,5 @@ class SampleTaxon(db.Model):
         return paginate(cls.query.order_by("name"), page)
 
     def save(self):
-
-
-        try:
-            db.session.add(self)
-            db.session.commit()
-        except InvalidRequestError as err:
-            pass
-        except SQLAlchemyError as err:
-            for key in err.__dict__.keys():
-                if key == 'orig':
-                    error = str(err.__dict__['orig'])
-                    print(error)
-
+        db.session.add(self)
+        db.session.commit()
