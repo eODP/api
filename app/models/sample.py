@@ -32,7 +32,7 @@ class Sample(db.Model):
     data_source_type = db.Column(db.String)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     dataset = db.Column(db.String, index=True)
-    eodp_id = db.Column(db.String)
+    eodp_id = db.Column(db.String, index=True)
 
     section = db.relationship("Section")
     taxa = db.relationship("SampleTaxon", back_populates="sample")

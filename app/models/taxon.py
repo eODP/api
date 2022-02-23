@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from sqlalchemy.dialects.postgresql.json import JSONB
 
 from extension import db
@@ -10,8 +9,8 @@ class Taxon(db.Model):
     __tablename__ = "taxa"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    taxon_group = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, index=True)
+    taxon_group = db.Column(db.String, nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     taxon_name_above_genus = db.Column(db.String, nullable=True)
     genus_modifier = db.Column(db.String, nullable=True)
