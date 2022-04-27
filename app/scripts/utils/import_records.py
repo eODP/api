@@ -490,9 +490,10 @@ def create_taxon_crosswalk(params):
         "taxon_id",
         "original_name",
         "taxon_group",
-        "comments",
-        "processing_notes",
-        "initial_comments",
+        "comments_1",
+        "comments_2",
+        "internal_notes",
+        "name_comment",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
