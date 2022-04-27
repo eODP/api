@@ -10,7 +10,7 @@ class Taxon(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, index=True)
-    taxon_group = db.Column(db.String, nullable=False, index=True)
+    taxon_group = db.Column(db.String, nullable=True, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     taxon_name_above_genus = db.Column(db.String, nullable=True)
     genus_modifier = db.Column(db.String, nullable=True)
@@ -39,8 +39,12 @@ class Taxon(db.Model):
         return cls.query.filter_by(id=id).first()
 
     @classmethod
-    def find_by_name(cls, name, taxon_group):
+    def find_by_name_and_group(cls, name, taxon_group):
         return cls.query.filter_by(name=name, taxon_group=taxon_group).first()
+
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
 
     def save(self):
         db.session.add(self)

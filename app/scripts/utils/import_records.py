@@ -504,13 +504,13 @@ def create_taxon_crosswalk(params):
 def find_taxon_by_name(params):
     allowed_attributes = ["name", "taxon_group"]
     attributes = allowed_params(allowed_attributes, params)
-    return Taxon.find_by_name(**attributes)
+    return Taxon.find_by_name_and_group(**attributes)
 
 
 def find_taxon_crosswalk_by_name(params):
     allowed_attributes = ["name", "taxon_group"]
     attributes = allowed_params(allowed_attributes, params)
-    return TaxonCrosswalk.find_by_name(**attributes)
+    return TaxonCrosswalk.find_by_name_and_group(**attributes)
 
 
 def find_taxon_crosswalk_by_name_and_taxon(params):
