@@ -494,6 +494,7 @@ def create_taxon_crosswalk(params):
         "comments_2",
         "internal_notes",
         "name_comment",
+        "eodp_id"
     ]
     attributes = allowed_params(allowed_attributes, params)
 
