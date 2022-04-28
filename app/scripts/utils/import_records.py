@@ -319,6 +319,7 @@ def create_section(params):
     record = Section(**attributes)
     record.save()
 
+
 def find_sample_by_eodp_id(params):
     allowed_attributes = ["eodp_id"]
     attributes = allowed_params(allowed_attributes, params)
@@ -482,7 +483,7 @@ def create_taxon(params):
         "pbdb_taxon_id",
         "pbdb_taxon_name",
         "pbdb_taxon_rank",
-        "pbdb_data"
+        "pbdb_data",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -499,7 +500,7 @@ def create_taxon_crosswalk(params):
         "comments_2",
         "internal_notes",
         "name_comment",
-        "eodp_id"
+        "eodp_id",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -567,11 +568,11 @@ def process_taxa_crosswalk_file(path):
     df = pd.read_csv(path, dtype=str)
     all_verbatim_names = {}
     for index, row in df.iterrows():
-        if row['verbatim_name'] not in all_verbatim_names:
-            all_verbatim_names[row['verbatim_name'].strip()] = []
+        if row["verbatim_name"] not in all_verbatim_names:
+            all_verbatim_names[row["verbatim_name"].strip()] = []
 
-        if row['taxon_group'] not in all_verbatim_names[row['verbatim_name']]:
-            all_verbatim_names[row['verbatim_name']].append(row['taxon_group'])
+        if row["taxon_group"] not in all_verbatim_names[row["verbatim_name"]]:
+            all_verbatim_names[row["verbatim_name"]].append(row["taxon_group"])
     return all_verbatim_names
 
 
@@ -585,12 +586,13 @@ def fetch_taxa_ids(verbatim_names, taxa_names):
                     {"name": name.strip(), "taxon_group": taxon_group}
                 )
             else:
-                taxon = find_taxon_crosswalk_by_name(
-                    {"name": name.strip()}
-                )
+                taxon = find_taxon_crosswalk_by_name({"name": name.strip()})
             if taxon is None:
                 continue
 
-            taxa_dict[name] = {"taxon_id": taxon.taxon_id, "original_taxon_id": taxon.id}
+            taxa_dict[name] = {
+                "taxon_id": taxon.taxon_id,
+                "original_taxon_id": taxon.id,
+            }
 
     return taxa_dict

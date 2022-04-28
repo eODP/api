@@ -22,7 +22,7 @@ from scripts.utils.import_records import (  # noqa: F402
     create_taxon_crosswalk,
     fetch_taxa_ids,
     find_sample_taxa_by_ids,
-    process_taxa_crosswalk_file
+    process_taxa_crosswalk_file,
 )
 from scripts.utils.pbdb_utils import format_pbdb_data_for_row
 
@@ -113,13 +113,13 @@ class Import_Normalized_Taxa(object):
                         "subspecies_modifier": row["subspecies modifier"],
                         "subspecies_name": row["subspecies name"],
                         "non_taxa_descriptor": row["non-taxa descriptor"],
-                        "pbdb_taxon_id": row['pbdb_taxon_id'],
-                        "pbdb_taxon_name": row['pbdb_taxon_name'],
-                        "pbdb_taxon_rank": row['pbdb_taxon_rank']
+                        "pbdb_taxon_id": row["pbdb_taxon_id"],
+                        "pbdb_taxon_name": row["pbdb_taxon_name"],
+                        "pbdb_taxon_rank": row["pbdb_taxon_rank"],
                     }
                     pbdb_data = format_pbdb_data_for_row(row)
                     if pbdb_data:
-                        data['pbdb_data'] = pbdb_data
+                        data["pbdb_data"] = pbdb_data
 
                     create_taxon(data)
 
@@ -131,14 +131,14 @@ class Import_Normalized_Taxa(object):
             "Dextral:Sinistral _P. praecursor_",
             "Dextral:Sinistral _P. praespectabilis_",
             "Dextral:Sinistral _P. primalis_",
-            "Dextral:Sinistral _P. spectabilis_"
+            "Dextral:Sinistral _P. spectabilis_",
         ]
         with open(TAXA_CROSSWALK_PATH, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 verbatim_name = row["verbatim_name"].strip()
                 if verbatim_name in dex_sin_taxa:
-                    row["verbatim_name"] = row['normalized_name']
+                    row["verbatim_name"] = row["normalized_name"]
                     self._import_taxa_crosswalk_file(row)
                 else:
                     self._import_taxa_crosswalk_file(row)
@@ -159,7 +159,9 @@ class Import_Normalized_Taxa(object):
                 }
             )
             if taxon is None:
-                raise ValueError(f'<{row["normalized_name"]}:{row["taxon_group"]}> is not in DB')
+                raise ValueError(
+                    f'<{row["normalized_name"]}:{row["taxon_group"]}> is not in DB'
+                )
 
             create_taxon_crosswalk(
                 {
@@ -170,7 +172,7 @@ class Import_Normalized_Taxa(object):
                     "comments_2": row["comments"],
                     "internal_notes": row["Notes (change to Internal only notes?)"],
                     "name_comment": row["name comment field"],
-                    "eodp_id": row["eodp_id"]
+                    "eodp_id": row["eodp_id"],
                 }
             )
 
@@ -182,8 +184,8 @@ class Import_Normalized_Taxa(object):
             print(path)
             filename = path.split("cleaned_data/")[-1]
             df = pd.read_csv(path, dtype=str)
-            df.dropna(how='all', axis=1, inplace=True)
-            df.dropna(how='all', axis=0, inplace=True)
+            df.dropna(how="all", axis=1, inplace=True)
+            df.dropna(how="all", axis=0, inplace=True)
 
             # get all the taxa names in the file headers
             columns = [col.strip() for col in df.columns]
@@ -198,11 +200,7 @@ class Import_Normalized_Taxa(object):
             if row["Exp"] == "":
                 continue
 
-            sample = find_sample_by_eodp_id(
-                {
-                    "eodp_id": row['eodp_id']
-                }
-            )
+            sample = find_sample_by_eodp_id({"eodp_id": row["eodp_id"]})
             if sample:
                 for taxon_name, ids in taxa_ids.items():
                     matching_taxa = []
@@ -210,14 +208,13 @@ class Import_Normalized_Taxa(object):
                         if col.strip() == taxon_name:
                             matching_taxa.append(col)
                     if len(matching_taxa) > 1:
-                        print(f'{filename} {taxon_name} more than one match.')
+                        print(f"{filename} {taxon_name} more than one match.")
 
                     taxon_code = row[matching_taxa[0]]
                     if taxon_code == taxon_code:
-                        sample_taxon = find_sample_taxa_by_ids({
-                            "taxon_id": ids["taxon_id"],
-                            "sample_id": sample.id,
-                        })
+                        sample_taxon = find_sample_taxa_by_ids(
+                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id,}
+                        )
                         if sample_taxon is None:
                             attr = {
                                 "original_taxon_id": ids["original_taxon_id"],
@@ -226,8 +223,8 @@ class Import_Normalized_Taxa(object):
                                 "data_source_notes": filename,
                                 "dataset": DATASET,
                             }
-                            if taxon_code != 'eODP_NA':
-                                attr['code'] = taxon_code
+                            if taxon_code != "eODP_NA":
+                                attr["code"] = taxon_code
                             create_sample_taxon(attr)
 
             else:

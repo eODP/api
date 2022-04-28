@@ -28,7 +28,6 @@ class SampleTaxon(db.Model):
     def find_by_ids(cls, sample_id, taxon_id):
         return cls.query.filter_by(sample_id=sample_id, taxon_id=taxon_id).first()
 
-
     def save(self):
         db.session.add(self)
         db.session.commit()

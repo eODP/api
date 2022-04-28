@@ -11,7 +11,7 @@ def format_taxon_name(taxon):
 
 
 def format_pbdb_data_for_row(row):
-    if not row['pbdb_taxon_id']:
+    if not row["pbdb_taxon_id"]:
         return
 
     data = {}
@@ -35,8 +35,8 @@ def format_pbdb_data_for_row(row):
         if field in row and row[field]:
             data[field] = row[field]
 
-    row_rank = row['pbdb_taxon_rank']
-    data[f'{row_rank}_taxon_id'] = row['pbdb_taxon_id']
-    data[f'{row_rank}_taxon_name'] = row['pbdb_taxon_name']
+    row_rank = row["pbdb_taxon_rank"]
+    data[f"{row_rank}_taxon_id"] = row["pbdb_taxon_id"]
+    data[f"{row_rank}_taxon_name"] = row["pbdb_taxon_name"]
 
     return data

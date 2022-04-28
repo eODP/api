@@ -114,11 +114,7 @@ class Import_Micropal_CSV(object):
             if row["Exp"] == "":
                 continue
 
-            sample = find_sample_by_eodp_id(
-                {
-                    "eodp_id": row['eodp_id']
-                }
-            )
+            sample = find_sample_by_eodp_id({"eodp_id": row["eodp_id"]})
             if not sample or not sample.first():
                 section = find_section(
                     {
@@ -144,8 +140,7 @@ class Import_Micropal_CSV(object):
                         "data_source_notes": filename,
                         "data_source_type": "micropal csv",
                         "dataset": DATASET,
-                        "eodp_id": row['eodp_id']
-
+                        "eodp_id": row["eodp_id"],
                     }
                     create_sample(attributes)
 
