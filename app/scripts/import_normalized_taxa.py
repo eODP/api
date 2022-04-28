@@ -123,42 +123,55 @@ class Import_Normalized_Taxa(object):
                     create_taxon(data)
 
     def import_taxa_crosswalk(self):
-        path = f"{FILE_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"
-        self._import_taxa_crosswalk_file(path)
-
-    def _import_taxa_crosswalk_file(self, path="foo"):
-        with open(path, mode="r") as csv_file:
+        dex_sin_taxa = [
+            "Dextral:Sinistral _N. acostaensis_",
+            "Dextral:Sinistral _P. finalis_",
+            "Dextral:Sinistral _P. obliquiloculata_",
+            "Dextral:Sinistral _P. praecursor_",
+            "Dextral:Sinistral _P. praespectabilis_",
+            "Dextral:Sinistral _P. primalis_",
+            "Dextral:Sinistral _P. spectabilis_"
+        ]
+        with open(TAXA_CROSSWALK_PATH, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                taxon_crosswalk = find_taxon_crosswalk_by_name_and_taxon(
-                    {
-                        "crosswalk_name": row["verbatim_name"].strip(),
-                        "taxon_name": row["normalized_name"].strip(),
-                        "taxon_group": row["taxon_group"].strip(),
-                    }
-                )
-                if taxon_crosswalk is None:
-                    taxon = find_taxon_by_name(
-                        {
-                            "name": row["normalized_name"].strip(),
-                            "taxon_group": row["taxon_group"].strip(),
-                        }
-                    )
-                    if taxon is None:
-                        raise ValueError(f'{row["normalized_name"]} is not in DB')
+                verbatim_name = row["verbatim_name"].strip()
+                if verbatim_name in dex_sin_taxa:
+                    row["verbatim_name"] = row['normalized_name']
+                    self._import_taxa_crosswalk_file(row)
+                else:
+                    self._import_taxa_crosswalk_file(row)
 
-                    create_taxon_crosswalk(
-                        {
-                            "taxon_id": taxon.id,
-                            "taxon_group": row["taxon_group"],
-                            "original_name": row["verbatim_name"],
-                            "comments": row["comments"],
-                            "initial_comments": row["initial_comments"],
-                        }
-                    )
+    def _import_taxa_crosswalk_file(self, row):
+        taxon_crosswalk = find_taxon_crosswalk_by_name_and_taxon(
+            {
+                "crosswalk_name": row["verbatim_name"],
+                "taxon_name": row["normalized_name"],
+                "taxon_group": row["taxon_group"],
+            }
+        )
+        if taxon_crosswalk is None:
+            taxon = find_taxon_by_name(
+                {
+                    "name": row["normalized_name"].strip(),
+                    "taxon_group": row["taxon_group"].strip(),
+                }
+            )
+            if taxon is None:
+                raise ValueError(f'<{row["normalized_name"]}:{row["taxon_group"]}> is not in DB')
 
-    def import_sample_taxa(self):
-        nontaxa_fields = fetch_nontaxa_fields(NONTAXA_CSV)
+            create_taxon_crosswalk(
+                {
+                    "taxon_id": taxon.id,
+                    "taxon_group": row["taxon_group"],
+                    "original_name": row["verbatim_name"],
+                    "comments_1": row["Comment"],
+                    "comments_2": row["comments"],
+                    "internal_notes": row["Notes (change to Internal only notes?)"],
+                    "name_comment": row["name comment field"],
+                    "eodp_id": row["eodp_id"]
+                }
+            )
 
         for path in MICROPAL_CSVS:
 
