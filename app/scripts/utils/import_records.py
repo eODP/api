@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 
 from extension import db
 from models.core import Core
@@ -323,7 +324,11 @@ def find_sample_by_eodp_id(params):
     attributes = allowed_params(allowed_attributes, params)
     return Sample.find_by_eodp_id(**attributes)
 
+
+def find_sample_taxa_by_ids(params):
+    allowed_attributes = ["sample_id", "taxon_id"]
     attributes = allowed_params(allowed_attributes, params)
+    return SampleTaxon.find_by_ids(**attributes)
 
 
 def find_sample(params):
@@ -558,26 +563,34 @@ def fetch_file_taxon_groups(metadata_csvs):
     return taxon_groups
 
 
-def fetch_taxa_columns(csv_reader, nontaxa_fields):
-    all_taxa_columns = set(csv_reader.fieldnames) - nontaxa_fields
-    taxa_columns = set()
+def process_taxa_crosswalk_file(path):
+    df = pd.read_csv(path, dtype=str)
+    all_verbatim_names = {}
+    for index, row in df.iterrows():
+        if row['verbatim_name'] not in all_verbatim_names:
+            all_verbatim_names[row['verbatim_name'].strip()] = []
 
-    for row in csv_reader:
-        for taxon in all_taxa_columns:
-            if row[taxon] and taxon != "":
-                taxa_columns.add(taxon)
-    return taxa_columns
+        if row['taxon_group'] not in all_verbatim_names[row['verbatim_name']]:
+            all_verbatim_names[row['verbatim_name']].append(row['taxon_group'])
+    return all_verbatim_names
 
 
-def fetch_taxa_ids(taxon_group, taxa_columns):
+def fetch_taxa_ids(verbatim_names, taxa_names):
     taxa_dict = {}
-    for name in taxa_columns:
-        taxon = find_taxon_crosswalk_by_name(
-            {"name": name.strip(), "taxon_group": taxon_group}
-        )
-        if taxon is None:
-            continue
+    for name in taxa_names:
+        taxon_groups = verbatim_names[name]
+        for taxon_group in taxon_groups:
+            if taxon_group == taxon_group:
+                taxon = find_taxon_crosswalk_by_name(
+                    {"name": name.strip(), "taxon_group": taxon_group}
+                )
+            else:
+                taxon = find_taxon_crosswalk_by_name(
+                    {"name": name.strip()}
+                )
+            if taxon is None:
+                continue
 
-        taxa_dict[name] = {"taxon_id": taxon.taxon_id, "original_taxon_id": taxon.id}
+            taxa_dict[name] = {"taxon_id": taxon.taxon_id, "original_taxon_id": taxon.id}
 
     return taxa_dict

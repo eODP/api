@@ -2,6 +2,7 @@ import os
 import csv
 import glob
 import sys
+import pandas as pd
 
 from flask import Flask
 import fire
@@ -19,9 +20,9 @@ from scripts.utils.import_records import (  # noqa: F402
     create_taxon,
     create_sample_taxon,
     create_taxon_crosswalk,
-    fetch_taxa_columns,
     fetch_taxa_ids,
-    fetch_nontaxa_fields,
+    find_sample_taxa_by_ids,
+    process_taxa_crosswalk_file
 )
 from scripts.utils.pbdb_utils import format_pbdb_data_for_row
 
@@ -173,27 +174,27 @@ class Import_Normalized_Taxa(object):
                 }
             )
 
+    def import_sample_taxa(self):
+        all_verbatim_names = process_taxa_crosswalk_file(TAXA_CROSSWALK_PATH)
         for path in MICROPAL_CSVS:
+            # if '320_U1331B_Radiolarians_2.csv' not in path:
+            #     continue
+            print(path)
+            filename = path.split("cleaned_data/")[-1]
+            df = pd.read_csv(path, dtype=str)
+            df.dropna(how='all', axis=1, inplace=True)
+            df.dropna(how='all', axis=0, inplace=True)
 
-            filename = path.split("/")[-1]
-            print(filename)
-            taxon_group = TAXON_GROUP
+            # get all the taxa names in the file headers
+            columns = [col.strip() for col in df.columns]
+            file_taxa = set(columns).intersection(set(all_verbatim_names.keys()))
+            taxa_ids = fetch_taxa_ids(all_verbatim_names, file_taxa)
 
-            with open(path, mode="r", encoding="utf-8-sig") as csv_file:
-                csv_reader = csv.DictReader(csv_file)
-                taxa_columns = fetch_taxa_columns(csv_reader, nontaxa_fields)
+            if len(file_taxa) > 0:
+                self._import_sample_taxa_for_csv(df, filename, taxa_ids)
 
-            with open(path, mode="r", encoding="utf-8-sig") as csv_file:
-                csv_reader = csv.DictReader(csv_file)
-
-                taxa_ids = fetch_taxa_ids(taxon_group, taxa_columns)
-                if bool(taxa_ids):
-                    self._import_sample_taxa_for_csv(
-                        csv_reader, filename, taxon_group, taxa_ids
-                    )
-
-    def _import_sample_taxa_for_csv(self, csv_reader, filename, taxon_group, taxa_ids):
-        for row in csv_reader:
+    def _import_sample_taxa_for_csv(self, df, filename, taxa_ids):
+        for index, row in df.iterrows():
             if row["Exp"] == "":
                 continue
 
@@ -202,23 +203,32 @@ class Import_Normalized_Taxa(object):
                     "eodp_id": row['eodp_id']
                 }
             )
-
-            sample = sample.first()
-
             if sample:
-                sample_id = sample.id
-                for name, ids in taxa_ids.items():
-                    taxon_code = row[name]
-                    if taxon_code:
-                        create_sample_taxon(
-                            {
+                for taxon_name, ids in taxa_ids.items():
+                    matching_taxa = []
+                    for col in row.keys():
+                        if col.strip() == taxon_name:
+                            matching_taxa.append(col)
+                    if len(matching_taxa) > 1:
+                        print(f'{filename} {taxon_name} more than one match.')
+
+                    taxon_code = row[matching_taxa[0]]
+                    if taxon_code == taxon_code:
+                        sample_taxon = find_sample_taxa_by_ids({
+                            "taxon_id": ids["taxon_id"],
+                            "sample_id": sample.id,
+                        })
+                        if sample_taxon is None:
+                            attr = {
                                 "original_taxon_id": ids["original_taxon_id"],
                                 "taxon_id": ids["taxon_id"],
-                                "sample_id": sample_id,
-                                "code": taxon_code,
+                                "sample_id": sample.id,
                                 "data_source_notes": filename,
+                                "dataset": DATASET,
                             }
-                        )
+                            if taxon_code != 'eODP_NA':
+                                attr['code'] = taxon_code
+                            create_sample_taxon(attr)
 
             else:
                 raise ValueError(f"Invalid sample {row['Sample']} {row['Exp']}")
