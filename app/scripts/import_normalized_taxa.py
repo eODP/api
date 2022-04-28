@@ -49,9 +49,9 @@ MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_3/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
 
 
-DATE = "2022-02-22"
-NONTAXA_CSV = f"{FILE_PATH}/taxa/non_taxa_fields_normalized.csv"
-
+DATE = "2022-04-28"
+TAXA_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_list_{DATE}.csv"
+TAXA_CROSSWALK_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"
 datasets = ["NOAA", "Janus", "LIMS"]
 DATASET = datasets[2]
 
@@ -85,8 +85,7 @@ class Import_Normalized_Taxa(object):
         db.engine.execute(f"TRUNCATE {table} RESTART IDENTITY CASCADE;")
 
     def import_taxa(self):
-        path = f"{OUTPUT_PATH}/taxa/LIMS/taxa_list_{DATE}.csv"
-        self._import_taxa_file(path)
+        self._import_taxa_file(TAXA_PATH)
 
     def _import_taxa_file(self, path):
         with open(path, mode="r") as csv_file:
