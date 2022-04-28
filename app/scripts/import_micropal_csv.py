@@ -27,7 +27,7 @@ FILE_PATH = os.environ.get("CLEANED_DATA_PATH")
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_2/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_3/*.csv"))
-MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
+MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_4/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
 
 datasets = ["NOAA", "Janus", "LIMS"]
@@ -101,7 +101,7 @@ class Import_Micropal_CSV(object):
 
     def import_samples(self):
         for path in MICROPAL_CSVS:
-            filename = path.split("/")[-1]
+            filename = path.split("cleaned_data/")[-1]
             print(filename)
 
             # add encoding because some CSVs have BOM added to the first key
@@ -119,7 +119,7 @@ class Import_Micropal_CSV(object):
                     "eodp_id": row['eodp_id']
                 }
             )
-            if not sample.first():
+            if not sample or not sample.first():
                 section = find_section(
                     {
                         "exp_name": row["Exp"],
