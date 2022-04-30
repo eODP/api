@@ -534,6 +534,7 @@ def create_sample_taxon(params):
         "code",
         "data_source_notes",
         "dataset",
+        "comments"
     ]
     attributes = allowed_params(allowed_attributes, params)
 
