@@ -496,11 +496,12 @@ def create_taxon_crosswalk(params):
         "taxon_id",
         "original_name",
         "taxon_group",
-        "comments_1",
-        "comments_2",
+        "comments",
+        "comment",
         "internal_notes",
         "name_comment",
         "eodp_id",
+        "additional_species_comments"
     ]
     attributes = allowed_params(allowed_attributes, params)
 

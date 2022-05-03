@@ -168,11 +168,12 @@ class Import_Normalized_Taxa(object):
                     "taxon_id": taxon.id,
                     "taxon_group": row["taxon_group"],
                     "original_name": row["verbatim_name"],
-                    "comments_1": row["Comment"],
-                    "comments_2": row["comments"],
+                    "comments": row["comments"],
+                    "comment": row["Comment"],
                     "internal_notes": row["Notes (change to Internal only notes?)"],
                     "name_comment": row["name comment field"],
                     "eodp_id": row["eodp_id"],
+                    "additional_species_comments": row['additional species comments']
                 }
             )
 

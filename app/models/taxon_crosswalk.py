@@ -11,12 +11,13 @@ class TaxonCrosswalk(db.Model):
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
     original_name = db.Column(db.String, nullable=False)
     taxon_group = db.Column(db.String, nullable=True)
-    comments_1 = db.Column(db.String, nullable=True)
-    comments_2 = db.Column(db.String, nullable=True)
+    comments = db.Column(db.String, nullable=True)
+    comment = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     internal_notes = db.Column(db.String, nullable=True)
     name_comment = db.Column(db.String, nullable=True)
     eodp_id = db.Column(db.String, index=True)
+    additional_species_comments = db.Column(db.String, nullable=True)
 
     @classmethod
     def find_by_name(cls, name):
