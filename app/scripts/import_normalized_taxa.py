@@ -22,7 +22,8 @@ from scripts.utils.import_records import (  # noqa: F402
     create_taxon_crosswalk,
     fetch_taxa_ids,
     find_sample_taxa_by_ids,
-    process_taxa_crosswalk_file,
+    get_taxa_and_taxon_groups,
+    extract_taxon_group_from_filename,
 )
 from scripts.utils.pbdb_utils import format_pbdb_data_for_row
 
@@ -43,6 +44,7 @@ taxon_groups = [
 
 FILE_PATH = os.environ.get("CLEANED_DATA_PATH")
 OUTPUT_PATH = os.environ.get("OUTPUT_PATH")
+PI_FILES_PATH = os.environ.get("PI_FILES_PATH")
 
 MICROPAL_CSVS = glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_1/*.csv")
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_2/*.csv"))
@@ -55,6 +57,7 @@ TAXA_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_list_{DATE}.csv"
 TAXA_CROSSWALK_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"
 datasets = ["NOAA", "Janus", "LIMS"]
 DATASET = datasets[2]
+ADDITIONAL_TAXA_PATH = f"{PI_FILES_PATH}/LIMS_Micropal_CSV_4_taxa_ADDTL_TAXA.csv"
 
 # ======================
 # create app
@@ -86,62 +89,48 @@ class Import_Normalized_Taxa(object):
         db.engine.execute(f"TRUNCATE {table} RESTART IDENTITY CASCADE;")
 
     def import_taxa(self):
-        self._import_taxa_file(TAXA_PATH)
-
-    def _import_taxa_file(self, path):
-        with open(path, mode="r") as csv_file:
+        with open(TAXA_PATH, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                taxon = find_taxon_by_name(
-                    {
-                        "name": row["normalized_name"].strip(),
-                        "taxon_group": row["taxon_group"].strip(),
-                    }
-                )
+                self._import_taxa_file(row)
 
-                if taxon is None:
-                    data = {
-                        "name": row["normalized_name"],
-                        "taxon_group": row["taxon_group"],
-                        "taxon_name_above_genus": row["Any taxon above genus"],
-                        "genus_modifier": row["genus modifier"],
-                        "genus_name": row["genus name"],
-                        "subgenera_modifier": row["subgenera modifier"],
-                        "subgenera_name": row["subgenera name"],
-                        "species_modifier": row["species modifier"],
-                        "species_name": row["species name"],
-                        "subspecies_modifier": row["subspecies modifier"],
-                        "subspecies_name": row["subspecies name"],
-                        "non_taxa_descriptor": row["non-taxa descriptor"],
-                        "pbdb_taxon_id": row["pbdb_taxon_id"],
-                        "pbdb_taxon_name": row["pbdb_taxon_name"],
-                        "pbdb_taxon_rank": row["pbdb_taxon_rank"],
-                    }
-                    pbdb_data = format_pbdb_data_for_row(row)
-                    if pbdb_data:
-                        data["pbdb_data"] = pbdb_data
+    def _import_taxa_file(self, row):
+        taxon = find_taxon_by_name(
+            {
+                "name": row["normalized_name"].strip(),
+                "taxon_group": row["taxon_group"].strip(),
+            }
+        )
 
-                    create_taxon(data)
+        if taxon is None:
+            data = {
+                "name": row["normalized_name"],
+                "taxon_group": row["taxon_group"],
+                "taxon_name_above_genus": row["Any taxon above genus"],
+                "genus_modifier": row["genus modifier"],
+                "genus_name": row["genus name"],
+                "subgenera_modifier": row["subgenera modifier"],
+                "subgenera_name": row["subgenera name"],
+                "species_modifier": row["species modifier"],
+                "species_name": row["species name"],
+                "subspecies_modifier": row["subspecies modifier"],
+                "subspecies_name": row["subspecies name"],
+                "non_taxa_descriptor": row["non-taxa descriptor"],
+                "pbdb_taxon_id": row["pbdb_taxon_id"],
+                "pbdb_taxon_name": row["pbdb_taxon_name"],
+                "pbdb_taxon_rank": row["pbdb_taxon_rank"],
+            }
+            pbdb_data = format_pbdb_data_for_row(row)
+            if pbdb_data:
+                data["pbdb_data"] = pbdb_data
+
+            create_taxon(data)
 
     def import_taxa_crosswalk(self):
-        dex_sin_taxa = [
-            "Dextral:Sinistral _N. acostaensis_",
-            "Dextral:Sinistral _P. finalis_",
-            "Dextral:Sinistral _P. obliquiloculata_",
-            "Dextral:Sinistral _P. praecursor_",
-            "Dextral:Sinistral _P. praespectabilis_",
-            "Dextral:Sinistral _P. primalis_",
-            "Dextral:Sinistral _P. spectabilis_",
-        ]
         with open(TAXA_CROSSWALK_PATH, mode="r") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                verbatim_name = row["verbatim_name"].strip()
-                if verbatim_name in dex_sin_taxa:
-                    row["verbatim_name"] = row["normalized_name"]
-                    self._import_taxa_crosswalk_file(row)
-                else:
-                    self._import_taxa_crosswalk_file(row)
+                self._import_taxa_crosswalk_file(row)
 
     def _import_taxa_crosswalk_file(self, row):
         taxon_crosswalk = find_taxon_crosswalk_by_name_and_taxon(
@@ -151,6 +140,7 @@ class Import_Normalized_Taxa(object):
                 "taxon_group": row["taxon_group"],
             }
         )
+
         if taxon_crosswalk is None:
             taxon = find_taxon_by_name(
                 {
@@ -173,17 +163,26 @@ class Import_Normalized_Taxa(object):
                     "internal_notes": row["Notes (change to Internal only notes?)"],
                     "name_comment": row["name comment field"],
                     "eodp_id": row["eodp_id"],
-                    "additional_species_comments": row['additional species comments']
+                    "additional_species_comments": row["additional species comments"],
                 }
             )
 
-    def import_sample_taxa(self):
-        all_verbatim_names = process_taxa_crosswalk_file(TAXA_CROSSWALK_PATH)
+    def import_samples_taxa(self):
+        taxa_df = pd.read_csv(TAXA_CROSSWALK_PATH, dtype=str)
+        all_verbatim_names = get_taxa_and_taxon_groups(taxa_df)
+
         for path in MICROPAL_CSVS:
-            # if '320_U1331B_Radiolarians_2.csv' not in path:
+            # Globigerinoides ruber (white) has two taxon groups in
+            # 368_U1505D_planktic_forams.csv and 356-U1463B_benthic_forams.csv
+
+            # 363-U1482A-planktic_forams.csv has dex
+
+            # if 'U1463B_benthic_forams' not in path:
             #     continue
-            print(path)
-            filename = path.split("cleaned_data/")[-1]
+
+            relative_path = path.split("cleaned_data/")[-1]
+            print(relative_path)
+
             df = pd.read_csv(path, dtype=str)
             df.dropna(how="all", axis=1, inplace=True)
             df.dropna(how="all", axis=0, inplace=True)
@@ -191,12 +190,16 @@ class Import_Normalized_Taxa(object):
             # get all the taxa names in the file headers
             columns = [col.strip() for col in df.columns]
             file_taxa = set(columns).intersection(set(all_verbatim_names.keys()))
-            taxa_ids = fetch_taxa_ids(all_verbatim_names, file_taxa)
+
+            filename = relative_path.split("/")[-1]
+            file_taxon_group = extract_taxon_group_from_filename(filename)
+
+            taxa_ids = fetch_taxa_ids(file_taxa, file_taxon_group, all_verbatim_names)
 
             if len(file_taxa) > 0:
-                self._import_sample_taxa_for_csv(df, filename, taxa_ids)
+                self._import_sample_taxa_for_csv(df, relative_path, taxa_ids)
 
-    def _import_sample_taxa_for_csv(self, df, filename, taxa_ids):
+    def _import_sample_taxa_for_csv(self, df, relative_path, taxa_ids):
         for index, row in df.iterrows():
             if row["Exp"] == "":
                 continue
@@ -209,9 +212,10 @@ class Import_Normalized_Taxa(object):
                         if col.strip() == taxon_name:
                             matching_taxa.append(col)
                     if len(matching_taxa) > 1:
-                        print(f"{filename} {taxon_name} more than one match.")
+                        print(f"{relative_path} {taxon_name} more than one match.")
 
                     taxon_code = row[matching_taxa[0]]
+                    # don't create sample_taxon if no taxon_code
                     if taxon_code == taxon_code:
                         sample_taxon = find_sample_taxa_by_ids(
                             {"taxon_id": ids["taxon_id"], "sample_id": sample.id,}
@@ -221,11 +225,11 @@ class Import_Normalized_Taxa(object):
                                 "original_taxon_id": ids["original_taxon_id"],
                                 "taxon_id": ids["taxon_id"],
                                 "sample_id": sample.id,
-                                "data_source_notes": filename,
+                                "data_source_notes": relative_path,
                                 "dataset": DATASET,
+                                "code": taxon_code,
                             }
-                            if taxon_code != "eODP_NA":
-                                attr["code"] = taxon_code
+
                             create_sample_taxon(attr)
 
             else:

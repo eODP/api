@@ -1,5 +1,6 @@
 import csv
 import pandas as pd
+import re
 
 from extension import db
 from models.core import Core
@@ -501,7 +502,7 @@ def create_taxon_crosswalk(params):
         "internal_notes",
         "name_comment",
         "eodp_id",
-        "additional_species_comments"
+        "additional_species_comments",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -535,7 +536,7 @@ def create_sample_taxon(params):
         "code",
         "data_source_notes",
         "dataset",
-        "comments"
+        "comments",
     ]
     attributes = allowed_params(allowed_attributes, params)
 
@@ -566,35 +567,80 @@ def fetch_file_taxon_groups(metadata_csvs):
     return taxon_groups
 
 
-def process_taxa_crosswalk_file(path):
-    df = pd.read_csv(path, dtype=str)
+def get_taxa_and_taxon_groups(df):
+    """Returns dictionary of verbatim names and their taxon groups"""
     all_verbatim_names = {}
     for index, row in df.iterrows():
-        if row["verbatim_name"] not in all_verbatim_names:
-            all_verbatim_names[row["verbatim_name"].strip()] = []
+        name = row["verbatim_name"]
+        if name not in all_verbatim_names:
+            all_verbatim_names[name.strip()] = []
 
-        if row["taxon_group"] not in all_verbatim_names[row["verbatim_name"]]:
-            all_verbatim_names[row["verbatim_name"]].append(row["taxon_group"])
+        if row["taxon_group"] not in all_verbatim_names[name]:
+            all_verbatim_names[name].append(row["taxon_group"])
+
     return all_verbatim_names
 
 
-def fetch_taxa_ids(verbatim_names, taxa_names):
+def fetch_taxa_ids(file_taxa, file_taxon_group, verbatim_names):
+    """get taxon_id and original_id for each taxa in file"""
     taxa_dict = {}
-    for name in taxa_names:
+    for name in file_taxa:
+        # get taxon groups vetted by the PIs
         taxon_groups = verbatim_names[name]
-        for taxon_group in taxon_groups:
-            if taxon_group == taxon_group:
+        if len(taxon_groups) == 0:
+            raise (ValueError(f"{name} does not have taxon groups."))
+
+        # if taxa has one taxon group, use PI approved taxon group
+        if len(taxon_groups) == 1:
+            taxon = find_taxon_crosswalk_by_name(
+                {"name": name.strip(), "taxon_group": taxon_groups[0]}
+            )
+
+        # if taxa has multiple taxon groups
+        elif len(taxon_groups) > 1:
+            # use taxon group from filename
+            if file_taxon_group in taxon_groups:
                 taxon = find_taxon_crosswalk_by_name(
-                    {"name": name.strip(), "taxon_group": taxon_group}
+                    {"name": name.strip(), "taxon_group": file_taxon_group}
                 )
             else:
-                taxon = find_taxon_crosswalk_by_name({"name": name.strip()})
-            if taxon is None:
-                continue
+                raise (ValueError(f"{name} does not belong to {taxon_groups}"))
 
-            taxa_dict[name] = {
-                "taxon_id": taxon.taxon_id,
-                "original_taxon_id": taxon.id,
-            }
+        if taxon is None:
+            raise (ValueError(f"{name} - {taxon_groups} not found"))
 
+        taxa_dict[name] = {
+            "taxon_id": taxon.taxon_id,
+            "original_taxon_id": taxon.id,
+        }
     return taxa_dict
+
+
+def extract_taxon_group_from_filename(filename):
+    filename = re.sub("-+", "_", filename)
+    filename = re.sub(" +", "_", filename)
+
+    filename_parts = re.search(
+        # matches 123-U1234A-taxon-group or 123-U1234A-taxongroup
+        r"^[0-9]{3}_+U[0-9]{4}[a-zA-Z]{0,3}_+([a-zA-Z]+(_[a-zA-Z]+)?)(_\d)?_?\.csv",
+        filename,
+    )
+
+    if filename_parts is None:
+        filename_parts = re.search(
+            # matches 123-taxon-group-U1234A- or 123-taxongroup-U1234A
+            r"^[0-9]{3}_+([a-zA-Z]+(_[a-zA-Z]+)?)_+U[0-9]{4}[a-zA-Z](_\d)?_?\.csv",
+            filename,
+        )
+
+    if filename_parts is None:
+        filename_parts = re.search(
+            # matches 123-taxon-group-U1234A_123_T01_taxon_group
+            r"^[0-9]{3}_+U[0-9]{4}[a-zA-Z]{0,3}_[0-9]{3}_T[0-9]{2}_+([a-zA-Z]+(_[a-zA-Z]+)?)(_\d)?_?\.csv",
+            filename,
+        )
+
+    if filename_parts is not None:
+        return filename_parts.groups()[0].lower()
+    else:
+        raise ValueError("Cannot extract taxon group.")
