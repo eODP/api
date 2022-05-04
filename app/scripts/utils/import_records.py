@@ -495,7 +495,7 @@ def create_taxon(params):
 def create_taxon_crosswalk(params):
     allowed_attributes = [
         "taxon_id",
-        "original_name",
+        "verbatim_name",
         "taxon_group",
         "comments",
         "comment",

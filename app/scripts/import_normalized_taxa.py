@@ -157,7 +157,7 @@ class Import_Normalized_Taxa(object):
                 {
                     "taxon_id": taxon.id,
                     "taxon_group": row["taxon_group"],
-                    "original_name": row["verbatim_name"],
+                    "verbatim_name": row["verbatim_name"],
                     "comments": row["comments"],
                     "comment": row["Comment"],
                     "internal_notes": row["Notes (change to Internal only notes?)"],
@@ -175,9 +175,9 @@ class Import_Normalized_Taxa(object):
             # Globigerinoides ruber (white) has two taxon groups in
             # 368_U1505D_planktic_forams.csv and 356-U1463B_benthic_forams.csv
 
-            # 363-U1482A-planktic_forams.csv has dex
+            # 363-U1482A-planktic_forams.csv has dextral
 
-            # if 'U1463B_benthic_forams' not in path:
+            # if '363-U1482A-planktic_forams' not in path:
             #     continue
 
             relative_path = path.split("cleaned_data/")[-1]

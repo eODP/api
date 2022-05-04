@@ -9,7 +9,7 @@ class TaxonCrosswalk(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     taxon_id = db.Column(db.Integer, db.ForeignKey("taxa.id"))
-    original_name = db.Column(db.String, nullable=False)
+    verbatim_name = db.Column(db.String, nullable=False)
     taxon_group = db.Column(db.String, nullable=True)
     comments = db.Column(db.String, nullable=True)
     comment = db.Column(db.String, nullable=True)
@@ -21,18 +21,18 @@ class TaxonCrosswalk(db.Model):
 
     @classmethod
     def find_by_name(cls, name):
-        return cls.query.filter_by(original_name=name).first()
+        return cls.query.filter_by(verbatim_name=name).first()
 
     @classmethod
     def find_by_name_and_group(cls, name, taxon_group):
-        return cls.query.filter_by(original_name=name, taxon_group=taxon_group).first()
+        return cls.query.filter_by(verbatim_name=name, taxon_group=taxon_group).first()
 
     @classmethod
     def find_by_name_and_taxon(cls, crosswalk_name, taxon_name, taxon_group):
         return (
             cls.query.join(Taxon)
             .filter(Taxon.name == taxon_name)
-            .filter(cls.original_name == crosswalk_name)
+            .filter(cls.verbatim_name == crosswalk_name)
             .filter(cls.taxon_group == taxon_group)
             .first()
         )
