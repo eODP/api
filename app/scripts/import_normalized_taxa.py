@@ -163,7 +163,6 @@ class Import_Normalized_Taxa(object):
                     "internal_notes": row["Notes (change to Internal only notes?)"],
                     "name_comment": row["name comment field"],
                     "eodp_id": row["eodp_id"],
-                    "additional_species_comments": row["additional species comments"],
                 }
             )
 

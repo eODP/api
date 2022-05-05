@@ -17,7 +17,6 @@ class TaxonCrosswalk(db.Model):
     internal_notes = db.Column(db.String, nullable=True)
     name_comment = db.Column(db.String, nullable=True)
     eodp_id = db.Column(db.String, index=True)
-    additional_species_comments = db.Column(db.String, nullable=True)
 
     @classmethod
     def find_by_name(cls, name):
