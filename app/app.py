@@ -15,6 +15,7 @@ from resources.taxon import TaxonListResource, TaxonResource
 
 # NOTE: import models in app.py so migrations will work
 from models.taxon_crosswalk import TaxonCrosswalk  # noqa: F401
+from models.abundance_crosswalk import AbundanceCrosswalk  # noqa: F401
 
 
 def create_app():
