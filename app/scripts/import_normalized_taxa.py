@@ -53,7 +53,7 @@ MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_4/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
 
 
-DATE = "2022-04-28"
+DATE = "2022-08-04"
 TAXA_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_list_{DATE}.csv"
 TAXA_CROSSWALK_PATH = f"{OUTPUT_PATH}/taxa/LIMS/taxa_crosswalk_{DATE}.csv"
 datasets = ["NOAA", "Janus", "LIMS"]
@@ -201,7 +201,7 @@ class Import_Normalized_Taxa(object):
 
     def _import_sample_taxa_for_csv(self, df, relative_path, taxa_ids):
         for index, row in df.iterrows():
-            if row["Exp"] == "":
+            if row["Exp"] == "" or pd.isna(row['Exp']):
                 continue
 
             sample = find_sample_by_eodp_id({"eodp_id": row["eodp_id"]})
