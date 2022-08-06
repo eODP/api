@@ -25,7 +25,7 @@ from scripts.utils.import_records import (  # noqa: F402
     get_taxa_and_taxon_groups,
     extract_taxon_group_from_filename,
 )
-from scripts.utils.pbdb_utils import format_pbdb_data_for_row
+from scripts.utils.pbdb_utils import format_pbdb_data_for_row  # noqa: F402
 
 taxon_groups = [
     "nannofossils",
@@ -201,7 +201,7 @@ class Import_Normalized_Taxa(object):
 
     def _import_sample_taxa_for_csv(self, df, relative_path, taxa_ids):
         for index, row in df.iterrows():
-            if row["Exp"] == "" or pd.isna(row['Exp']):
+            if row["Exp"] == "" or pd.isna(row["Exp"]):
                 continue
 
             sample = find_sample_by_eodp_id({"eodp_id": row["eodp_id"]})
@@ -218,7 +218,7 @@ class Import_Normalized_Taxa(object):
                     # don't create sample_taxon if no taxon_code
                     if taxon_code == taxon_code:
                         sample_taxon = find_sample_taxa_by_ids(
-                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id,}
+                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id}
                         )
                         if sample_taxon is None:
                             attr = {

@@ -1,5 +1,4 @@
 import csv
-import pandas as pd
 import re
 
 from extension import db
@@ -635,7 +634,7 @@ def extract_taxon_group_from_filename(filename):
     if filename_parts is None:
         filename_parts = re.search(
             # matches 123-taxon-group-U1234A_123_T01_taxon_group
-            r"^[0-9]{3}_+U[0-9]{4}[a-zA-Z]{0,3}_[0-9]{3}_T[0-9]{2}_+([a-zA-Z]+(_[a-zA-Z]+)?)(_\d)?_?\.csv",
+            r"^[0-9]{3}_+U[0-9]{4}[a-zA-Z]{0,3}_[0-9]{3}_T[0-9]{2}_+([a-zA-Z]+(_[a-zA-Z]+)?)(_\d)?_?\.csv",  # noqa: E501
             filename,
         )
 

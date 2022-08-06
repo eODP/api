@@ -1,6 +1,4 @@
-import requests
 import os
-import csv
 import sys
 
 from flask import Flask
