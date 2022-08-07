@@ -23,9 +23,9 @@ from scripts.utils.import_records import (  # noqa: F402
     fetch_taxa_ids,
     find_sample_taxa_by_ids,
     get_taxa_and_taxon_groups,
-    extract_taxon_group_from_filename,
 )
 from scripts.utils.pbdb_utils import format_pbdb_data_for_row  # noqa: F402
+from scripts.utils.shared_utils import extract_taxon_group_from_filename  # noqa: F402
 
 taxon_groups = [
     "nannofossils",
