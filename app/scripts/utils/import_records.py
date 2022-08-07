@@ -569,9 +569,9 @@ def get_taxa_and_taxon_groups(df):
     """Returns dictionary of verbatim names and their taxon groups"""
     all_verbatim_names = {}
     for index, row in df.iterrows():
-        name = row["verbatim_name"]
+        name = row["verbatim_name"].strip()
         if name not in all_verbatim_names:
-            all_verbatim_names[name.strip()] = []
+            all_verbatim_names[name] = []
 
         if row["taxon_group"] not in all_verbatim_names[name]:
             all_verbatim_names[name].append(row["taxon_group"])
@@ -583,8 +583,12 @@ def fetch_taxa_ids(file_taxa, file_taxon_group, verbatim_names):
     """get taxon_id and original_id for each taxa in file"""
     taxa_dict = {}
     for name in file_taxa:
+        if name not in verbatim_names:
+            raise (ValueError(f"{name} not in verbatim_names."))
+
         # get taxon groups vetted by the PIs
         taxon_groups = verbatim_names[name]
+
         if len(taxon_groups) == 0:
             raise (ValueError(f"{name} does not have taxon groups."))
 
@@ -602,7 +606,7 @@ def fetch_taxa_ids(file_taxa, file_taxon_group, verbatim_names):
                     {"name": name.strip(), "taxon_group": file_taxon_group}
                 )
             else:
-                raise (ValueError(f"{name} does not belong to {taxon_groups}"))
+                raise (ValueError(f"{name} does not belong to {file_taxon_group}"))
 
         if taxon is None:
             raise (ValueError(f"{name} - {taxon_groups} not found"))
