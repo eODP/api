@@ -564,20 +564,6 @@ def fetch_file_taxon_groups(metadata_csvs):
     return taxon_groups
 
 
-def get_taxa_and_taxon_groups(df):
-    """Returns dictionary of verbatim names and their taxon groups"""
-    all_verbatim_names = {}
-    for index, row in df.iterrows():
-        name = row["verbatim_name"].strip()
-        if name not in all_verbatim_names:
-            all_verbatim_names[name] = []
-
-        if row["taxon_group"] not in all_verbatim_names[name]:
-            all_verbatim_names[name].append(row["taxon_group"])
-
-    return all_verbatim_names
-
-
 def fetch_taxa_ids(file_taxa, file_taxon_group, verbatim_names):
     """get taxon_id and original_id for each taxa in file"""
     taxa_dict = {}
