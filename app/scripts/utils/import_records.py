@@ -10,6 +10,8 @@ from models.site import Site
 from models.taxon import Taxon
 from models.sample_taxon import SampleTaxon
 from models.taxon_crosswalk import TaxonCrosswalk
+from models.field import Field
+from models.sample_field import SampleField
 from scripts.utils.db_utils import allowed_params, trim_doc_string, add_null_queries
 
 
@@ -601,3 +603,17 @@ def fetch_taxa_ids(file_taxa, file_taxon_group, verbatim_names):
             "original_taxon_id": taxon.id,
         }
     return taxa_dict
+
+
+def find_field_by_name(params):
+    allowed_attributes = ["name"]
+    attributes = allowed_params(allowed_attributes, params)
+    return Field.find_by_name(**attributes)
+
+
+def create_field(params):
+    allowed_attributes = ["name"]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = Field(**attributes)
+    record.save()
