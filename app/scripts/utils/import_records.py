@@ -617,3 +617,28 @@ def create_field(params):
 
     record = Field(**attributes)
     record.save()
+
+
+def fetch_field_ids(fields_dict):
+    for field_name, values in fields_dict.items():
+        field = find_field_by_name({"name": values["name"]})
+        if field:
+            fields_dict[field_name]["field_id"] = field.id
+        else:
+            raise (ValueError(f"{field_name} not found"))
+
+    return fields_dict
+
+
+def find_sample_field_by_ids(params):
+    allowed_attributes = ["sample_id", "field_id", "value"]
+    attributes = allowed_params(allowed_attributes, params)
+    return SampleField.find_by_ids(**attributes)
+
+
+def create_sample_field(params):
+    allowed_attributes = ["sample_id", "field_id", "value", "data_source_notes", "original_name"]
+    attributes = allowed_params(allowed_attributes, params)
+
+    record = SampleField(**attributes)
+    record.save()
