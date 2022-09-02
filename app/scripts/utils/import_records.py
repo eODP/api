@@ -328,7 +328,7 @@ def find_sample_by_eodp_id(params):
 
 
 def find_sample_taxa_by_ids(params):
-    allowed_attributes = ["sample_id", "taxon_id"]
+    allowed_attributes = ["sample_id", "taxon_id", "original_taxon_id"]
     attributes = allowed_params(allowed_attributes, params)
     return SampleTaxon.find_by_ids(**attributes)
 

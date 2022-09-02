@@ -174,6 +174,8 @@ class Import_Normalized_Taxa(object):
         all_verbatim_names = get_taxa_and_taxon_groups(taxa_df)
 
         for path in MICROPAL_CSVS:
+            # if '317_U1351_planktic_forams.csv' not in path:
+            #     continue
             # Globigerinoides ruber (white) has two taxon groups in
             # 368_U1505D_planktic_forams.csv and 356-U1463B_benthic_forams.csv
 
@@ -220,7 +222,7 @@ class Import_Normalized_Taxa(object):
                     # don't create sample_taxon if no taxon_code
                     if taxon_code == taxon_code:
                         sample_taxon = find_sample_taxa_by_ids(
-                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id}
+                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id, "original_taxon_id": ids['original_taxon_id']}
                         )
                         if sample_taxon is None:
                             attr = {
