@@ -222,7 +222,11 @@ class Import_Normalized_Taxa(object):
                     # don't create sample_taxon if no taxon_code
                     if taxon_code == taxon_code:
                         sample_taxon = find_sample_taxa_by_ids(
-                            {"taxon_id": ids["taxon_id"], "sample_id": sample.id, "original_taxon_id": ids['original_taxon_id']}
+                            {
+                                "taxon_id": ids["taxon_id"],
+                                "sample_id": sample.id,
+                                "original_taxon_id": ids["original_taxon_id"],
+                            }
                         )
                         if sample_taxon is None:
                             attr = {

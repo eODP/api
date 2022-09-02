@@ -118,7 +118,7 @@ class Import_Normalized_Fields(object):
                             "sample_id": sample.id,
                             "field_id": field_ids[field_name]["field_id"],
                             "value": row[field_name],
-                            "original_name": field_name
+                            "original_name": field_name,
                         }
                         sample_field = find_sample_field_by_ids(data)
 
@@ -128,8 +128,7 @@ class Import_Normalized_Fields(object):
                                 "field_id": field_ids[field_name]["field_id"],
                                 "value": row[field_name],
                                 "data_source_notes": relative_path,
-                                "original_name": field_name
-
+                                "original_name": field_name,
                             }
                             create_sample_field(attrs)
                 else:

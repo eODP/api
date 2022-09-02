@@ -637,7 +637,13 @@ def find_sample_field_by_ids(params):
 
 
 def create_sample_field(params):
-    allowed_attributes = ["sample_id", "field_id", "value", "data_source_notes", "original_name"]
+    allowed_attributes = [
+        "sample_id",
+        "field_id",
+        "value",
+        "data_source_notes",
+        "original_name",
+    ]
     attributes = allowed_params(allowed_attributes, params)
 
     record = SampleField(**attributes)

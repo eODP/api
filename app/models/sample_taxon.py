@@ -27,7 +27,9 @@ class SampleTaxon(db.Model):
 
     @classmethod
     def find_by_ids(cls, sample_id, taxon_id, original_taxon_id):
-        return cls.query.filter_by(sample_id=sample_id, taxon_id=taxon_id, original_taxon_id=original_taxon_id).first()
+        return cls.query.filter_by(
+            sample_id=sample_id, taxon_id=taxon_id, original_taxon_id=original_taxon_id
+        ).first()
 
     def save(self):
         db.session.add(self)
