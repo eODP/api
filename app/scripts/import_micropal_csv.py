@@ -115,7 +115,7 @@ class Import_Micropal_CSV(object):
                 continue
 
             sample = find_sample_by_eodp_id({"eodp_id": row["eodp_id"]})
-            if not sample or not sample.first():
+            if not sample:
                 section = find_section(
                     {
                         "exp_name": row["Exp"],
