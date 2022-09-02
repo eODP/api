@@ -17,9 +17,9 @@ class SampleField(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     @classmethod
-    def find_by_ids(cls, sample_id, field_id, value):
+    def find_by_ids(cls, sample_id, field_id, value, original_name):
         return cls.query.filter_by(
-            sample_id=sample_id, field_id=field_id, value=value
+            sample_id=sample_id, field_id=field_id, value=value, original_name=original_name
         ).first()
 
     def save(self):

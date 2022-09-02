@@ -631,7 +631,7 @@ def fetch_field_ids(fields_dict):
 
 
 def find_sample_field_by_ids(params):
-    allowed_attributes = ["sample_id", "field_id", "value"]
+    allowed_attributes = ["sample_id", "field_id", "value", "original_name"]
     attributes = allowed_params(allowed_attributes, params)
     return SampleField.find_by_ids(**attributes)
 

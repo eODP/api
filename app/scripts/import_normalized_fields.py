@@ -33,7 +33,7 @@ MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_4/*.csv"))
 MICROPAL_CSVS.extend(glob.glob(f"{FILE_PATH}/LIMS/Micropal_CSV_revised/*.csv"))
 
 
-DATE = "2022-08-11"
+DATE = "2022-08-30"
 FIELDS_PATH = f"{OUTPUT_PATH}/normalized_data/LIMS/nontaxa_fields_{DATE}.csv"
 datasets = ["NOAA", "Janus", "LIMS"]
 DATASET = datasets[2]
@@ -85,7 +85,11 @@ class Import_Normalized_Fields(object):
         original_fields = set(original_new_dict.keys())
 
         for path in MICROPAL_CSVS:
+            # if '350_U1436A_planktic_forams.csv' not in path:
+            #     continue
+
             print(path)
+
             df = pd.read_csv(path, dtype=str)
             df.dropna(how="all", axis=1, inplace=True)
             df.dropna(how="all", axis=0, inplace=True)
@@ -114,6 +118,7 @@ class Import_Normalized_Fields(object):
                             "sample_id": sample.id,
                             "field_id": field_ids[field_name]["field_id"],
                             "value": row[field_name],
+                            "original_name": field_name
                         }
                         sample_field = find_sample_field_by_ids(data)
 
